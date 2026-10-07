@@ -1,0 +1,96 @@
+/* ==========================================================================
+   cyber-ui built-in themes.
+
+   Apply with a data attribute — on <html> for the whole page, or on any
+   container for just that subtree (tokens inherit, including into shadow
+   DOM, so <cyber-*> elements retheme with the CSS classes):
+
+     <html data-cyber-theme="phosphor">
+     <section data-cyber-theme="crimson">…</section>
+
+   Themes nest; the nearest ancestor wins. A theme only overrides base
+   tokens (tokens.css) — anything it skips falls through to the
+   surrounding theme, so user themes can be as small as one color.
+   ========================================================================== */
+
+/* -- netrunner: the default cyan/pink. Mirrors the :root defaults in
+      tokens.css (keep in sync) — exists as a named theme so you can nest
+      back to the default inside another theme's scope. ------------------- */
+[data-cyber-theme="netrunner"] {
+  --cyber-bg: #05080f;
+  --cyber-surface: #0a1220;
+  --cyber-surface-glass: rgba(10, 20, 34, 0.82);
+  --cyber-primary: #00e5ff;
+  --cyber-accent: #ff2a6d;
+  --cyber-warning: #ffc857;
+  --cyber-danger: #ff4d5e;
+  --cyber-success: #3dffa0;
+  --cyber-text: #d7edf5;
+  --cyber-text-dim: #7e98a8;
+  --cyber-text-on-primary: #041019;
+  --cyber-highlight: #ffffff;
+  --cyber-shade: #000000;
+}
+
+/* -- crimson: red alert / corporate-security palette --------------------- */
+[data-cyber-theme="crimson"] {
+  --cyber-bg: #0d0409;
+  --cyber-surface: #190a12;
+  --cyber-surface-glass: rgba(25, 10, 18, 0.82);
+  --cyber-primary: #ff3d5e;
+  --cyber-accent: #ffb000;
+  --cyber-warning: #ffc857;
+  --cyber-danger: #ff2e2e;
+  --cyber-success: #3dffa0;
+  --cyber-text: #f2dbe1;
+  --cyber-text-dim: #a97f8d;
+  --cyber-text-on-primary: #1c040a;
+}
+
+/* -- phosphor: green monochrome terminal --------------------------------- */
+[data-cyber-theme="phosphor"] {
+  --cyber-bg: #030904;
+  --cyber-surface: #07140b;
+  --cyber-surface-glass: rgba(7, 20, 11, 0.82);
+  --cyber-primary: #3dff6e;
+  --cyber-accent: #d8ff3d;
+  --cyber-warning: #ffc857;
+  --cyber-danger: #ff4d5e;
+  --cyber-success: #9dffc9;
+  --cyber-text: #d9f5de;
+  --cyber-text-dim: #7fa88b;
+  --cyber-text-on-primary: #03140a;
+}
+
+/* -- synthwave: violet/pink retrowave ------------------------------------- */
+[data-cyber-theme="synthwave"] {
+  --cyber-bg: #0c0418;
+  --cyber-surface: #170a2b;
+  --cyber-surface-glass: rgba(23, 10, 43, 0.82);
+  --cyber-primary: #c45eff;
+  --cyber-accent: #ff2a9d;
+  --cyber-warning: #ffd166;
+  --cyber-danger: #ff4d5e;
+  --cyber-success: #3dffd4;
+  --cyber-text: #eadcf7;
+  --cyber-text-dim: #9b84b5;
+  --cyber-text-on-primary: #1a0526;
+}
+
+/* -- ghost: pale light-surface palette. Proof that the neutral mixers
+      work — note the softened --cyber-shade so scanlines don't overpower
+      the light background. ------------------------------------------------ */
+[data-cyber-theme="ghost"] {
+  --cyber-bg: #dde6ec;
+  --cyber-surface: #edf3f6;
+  --cyber-surface-glass: rgba(237, 243, 246, 0.85);
+  --cyber-primary: #0090b3;
+  --cyber-accent: #d6336c;
+  --cyber-warning: #b25e00;
+  --cyber-danger: #d90429;
+  --cyber-success: #0a8a5f;
+  --cyber-text: #15232c;
+  --cyber-text-dim: #52697a;
+  --cyber-text-on-primary: #f0fbff;
+  --cyber-shade: #26404f;
+}

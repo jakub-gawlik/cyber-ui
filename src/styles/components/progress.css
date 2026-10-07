@@ -1,0 +1,127 @@
+/* ==========================================================================
+   .cyber-progress — resource / progress bar. Pure CSS; the fill width comes
+   from a custom property, so frameworks just bind a style.
+   <div class="cyber-progress" style="--cyber-progress: 72%">
+     <div class="cyber-progress__label"><span>Hull</span><span>72%</span></div>
+     <div class="cyber-progress__track" role="progressbar" aria-valuenow="72"
+          aria-valuemin="0" aria-valuemax="100">
+       <div class="cyber-progress__bar"></div>
+     </div>
+   </div>
+   Variants: --striped (animated), --segmented, --accent, --warning,
+   --danger, --success. Segment count: --cyber-progress-segments (default 8).
+   ========================================================================== */
+
+.cyber-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cyber-space-1);
+  font-family: var(--cyber-font-body);
+}
+
+.cyber-progress__label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--cyber-space-3);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-progress__label > :last-child {
+  color: var(--cyber-primary);
+  text-shadow: 0 0 6px var(--cyber-glow-color);
+}
+
+.cyber-progress__track {
+  position: relative;
+  height: 10px;
+  border: var(--cyber-border-width) solid var(--cyber-border-dim);
+  background: color-mix(in srgb, var(--cyber-primary) 5%, transparent);
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+
+.cyber-progress__bar {
+  height: 100%;
+  width: var(--cyber-progress, 0%);
+  max-width: 100%;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--cyber-primary) 55%, transparent),
+    var(--cyber-primary)
+  );
+  box-shadow: inset 0 0 6px color-mix(in srgb, var(--cyber-highlight) 25%, transparent);
+  transition: width 0.3s ease;
+}
+
+/* -- segmented: mask carves the bar into blocks --------------------------- */
+.cyber-progress--segmented .cyber-progress__bar {
+  -webkit-mask-image: repeating-linear-gradient(
+    to right,
+    #000 0 calc(100% / var(--cyber-progress-segments, 8) - 3px),
+    transparent calc(100% / var(--cyber-progress-segments, 8) - 3px)
+      calc(100% / var(--cyber-progress-segments, 8))
+  );
+  mask-image: repeating-linear-gradient(
+    to right,
+    #000 0 calc(100% / var(--cyber-progress-segments, 8) - 3px),
+    transparent calc(100% / var(--cyber-progress-segments, 8) - 3px)
+      calc(100% / var(--cyber-progress-segments, 8))
+  );
+}
+
+/* -- striped --------------------------------------------------------------- */
+.cyber-progress--striped .cyber-progress__bar {
+  /* stripe layer on top of the base fill gradient */
+  background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--cyber-highlight) 16%, transparent) 0 6px,
+      transparent 6px 12px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--cyber-primary) 55%, transparent),
+      var(--cyber-primary)
+    );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-progress--striped .cyber-progress__bar {
+    animation: cyber-progress-stripes 1.2s linear infinite;
+  }
+}
+
+@keyframes cyber-progress-stripes {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 17px 0, 0 0; }
+}
+
+/* -- color variants ---------------------------------------------------------
+   Each swaps the local primary and re-derives the tokens this component
+   consumes — derived tokens inherited from the theme scope don't
+   recompute here (see tokens.css). */
+.cyber-progress--accent {
+  --cyber-primary: var(--cyber-accent);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-accent) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-accent) 55%, transparent);
+}
+
+.cyber-progress--warning {
+  --cyber-primary: var(--cyber-warning);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-warning) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-warning) 55%, transparent);
+}
+
+.cyber-progress--danger {
+  --cyber-primary: var(--cyber-danger);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-danger) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-danger) 55%, transparent);
+}
+
+.cyber-progress--success {
+  --cyber-primary: var(--cyber-success);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-success) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-success) 55%, transparent);
+}

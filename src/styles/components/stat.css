@@ -1,0 +1,69 @@
+/* ==========================================================================
+   .cyber-stat — stat readout: label, big value, optional delta.
+   <div class="cyber-stat">
+     <span class="cyber-stat__label">Energy Credits</span>
+     <span class="cyber-stat__value">12,480</span>
+     <span class="cyber-stat__delta cyber-stat__delta--up">+340</span>
+   </div>
+   Delta direction: --up (success), --down (danger). Group several in a flex
+   row; each stat carries its own left accent rule.
+   ========================================================================== */
+
+.cyber-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  padding-left: var(--cyber-space-2);
+  border-left: 2px solid var(--cyber-border);
+  font-family: var(--cyber-font-body);
+}
+
+.cyber-stat__label {
+  font-family: var(--cyber-font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-stat__value {
+  font-family: var(--cyber-font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--cyber-text);
+  text-shadow: 0 0 10px var(--cyber-glow-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.cyber-stat__delta {
+  font-family: var(--cyber-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--cyber-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.cyber-stat__delta::before {
+  margin-right: 0.3em;
+}
+
+.cyber-stat__delta--up {
+  color: var(--cyber-success);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--cyber-success) 50%, transparent);
+}
+
+.cyber-stat__delta--up::before {
+  content: "▲";
+  font-size: 0.7em;
+}
+
+.cyber-stat__delta--down {
+  color: var(--cyber-danger);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--cyber-danger) 50%, transparent);
+}
+
+.cyber-stat__delta--down::before {
+  content: "▼";
+  font-size: 0.7em;
+}

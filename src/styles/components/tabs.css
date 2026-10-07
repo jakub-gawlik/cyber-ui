@@ -1,0 +1,64 @@
+/* ==========================================================================
+   .cyber-tabs — tab strip + panels. Used by <cyber-tabs> internally and
+   usable class-only (consumer wires behavior, e.g. their framework router).
+   ========================================================================== */
+
+.cyber-tabs__list {
+  display: flex;
+  gap: var(--cyber-space-1);
+  border-bottom: var(--cyber-border-width) solid var(--cyber-border-dim);
+}
+
+.cyber-tabs__panels {
+  padding-top: var(--cyber-space-3);
+}
+
+/* class-only usage: put .cyber-tab on buttons, aria-selected drives state */
+.cyber-tab {
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  border: 0;
+  background: transparent;
+  padding: 0.55em 1.2em;
+  font-family: var(--cyber-font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cyber-text-dim);
+  cursor: pointer;
+  transition: color 0.15s ease, text-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cyber-tab:hover {
+  color: var(--cyber-text);
+  background: var(--cyber-tint);
+}
+
+.cyber-tab:focus-visible {
+  outline: 1px solid var(--cyber-primary);
+  outline-offset: -2px;
+}
+
+/* active indicator */
+.cyber-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--cyber-border-width) * -1);
+  height: 2px;
+  background: var(--cyber-primary);
+  box-shadow: 0 0 8px var(--cyber-glow-color);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.cyber-tab[aria-selected="true"] {
+  color: var(--cyber-primary);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}

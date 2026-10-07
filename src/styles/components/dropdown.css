@@ -1,0 +1,56 @@
+/* ==========================================================================
+   .cyber-dropdown — anchored menu surface. Used by <cyber-dropdown>
+   internally; the menu skin (.cyber-menu) is also usable standalone.
+   ========================================================================== */
+
+.cyber-menu {
+  min-width: 12rem;
+  padding: var(--cyber-space-1) 0;
+  background: var(--cyber-surface);
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--cyber-shade) 60%, transparent),
+    0 0 10px var(--cyber-glow-color);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+.cyber-menu__item {
+  -webkit-tap-highlight-color: transparent;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em 1em;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-family: var(--cyber-font-mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--cyber-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.cyber-menu__item:hover,
+.cyber-menu__item:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--cyber-primary) 14%, transparent);
+  color: var(--cyber-primary);
+}
+
+/* press feedback (touch included) */
+.cyber-menu__item:active {
+  background: color-mix(in srgb, var(--cyber-primary) 24%, transparent);
+}
+
+.cyber-menu__item[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.cyber-menu__separator {
+  height: 1px;
+  margin: var(--cyber-space-1) 0;
+  background: var(--cyber-border-dim);
+}

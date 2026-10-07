@@ -1,0 +1,54 @@
+/* ==========================================================================
+   .cyber-link — uppercase mono link with animated underline + hover glow.
+   Used standalone and inside card/panel footers.
+   ========================================================================== */
+
+.cyber-link {
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  font-family: var(--cyber-font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--cyber-primary);
+  text-decoration: none;
+  padding-bottom: 2px;
+  transition: text-shadow 0.15s ease;
+}
+
+.cyber-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--cyber-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.cyber-link:hover,
+.cyber-link:focus-visible {
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-link:hover::after,
+.cyber-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.cyber-link:focus-visible {
+  outline: 1px solid var(--cyber-border);
+  outline-offset: 3px;
+}
+
+.cyber-link--accent {
+  color: var(--cyber-accent);
+}
+
+.cyber-link--accent::after {
+  background: var(--cyber-accent);
+}

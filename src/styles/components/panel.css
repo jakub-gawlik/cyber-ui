@@ -1,0 +1,71 @@
+/* ==========================================================================
+   .cyber-panel — framed container with corner brackets and a header bar.
+   The Stellaris-style "window". Brackets are drawn with pseudo-elements,
+   so panel content is unrestricted.
+   ========================================================================== */
+
+.cyber-panel {
+  position: relative;
+  background: var(--cyber-surface-glass);
+  border: var(--cyber-border-width) solid var(--cyber-border-dim);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-body);
+}
+
+/* corner brackets */
+.cyber-panel::before,
+.cyber-panel::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  transition: width 0.2s ease, height 0.2s ease;
+}
+
+/* brackets stretch toward the corners on hover — real-pointer devices only */
+@media (hover: hover) and (pointer: fine) {
+  .cyber-panel:hover::before,
+  .cyber-panel:hover::after {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.cyber-panel::before {
+  top: -2px;
+  left: -2px;
+  border-top: 2px solid var(--cyber-primary);
+  border-left: 2px solid var(--cyber-primary);
+}
+
+.cyber-panel::after {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 2px solid var(--cyber-primary);
+  border-right: 2px solid var(--cyber-primary);
+}
+
+.cyber-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cyber-space-3);
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--cyber-primary) 14%, transparent),
+    transparent 70%
+  );
+  border-bottom: var(--cyber-border-width) solid var(--cyber-border-dim);
+  font-family: var(--cyber-font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-panel__body {
+  padding: var(--cyber-space-3);
+}

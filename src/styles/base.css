@@ -1,0 +1,47 @@
+/* ==========================================================================
+   cyber-ui base — opt-in typography & page helpers. No global resets:
+   nothing here styles bare elements, so the library is safe to drop into
+   an existing project.
+   ========================================================================== */
+
+/* Page backdrop helper — put on <body> or any container */
+.cyber-screen {
+  background: var(--cyber-bg);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-body);
+}
+
+.cyber-heading {
+  margin: 0;
+  font-family: var(--cyber-font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--cyber-text);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-label {
+  font-family: var(--cyber-font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-text {
+  font-family: var(--cyber-font-body);
+  color: var(--cyber-text);
+  line-height: 1.55;
+}
+
+.cyber-text--dim {
+  color: var(--cyber-text-dim);
+}
+
+/* Terminal-style readout text */
+.cyber-terminal {
+  font-family: var(--cyber-font-mono);
+  color: var(--cyber-primary);
+  text-shadow: 0 0 6px var(--cyber-glow-color);
+}

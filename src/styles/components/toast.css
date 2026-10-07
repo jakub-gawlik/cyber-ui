@@ -1,0 +1,118 @@
+/* ==========================================================================
+   .cyber-toast — notification card. Used by <cyber-toaster> (shadow DOM)
+   and usable standalone for static alert banners.
+   Variants: --success, --warning, --danger (default: info/primary).
+   ========================================================================== */
+
+.cyber-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--cyber-space-2);
+  min-width: 260px;
+  max-width: 360px;
+  padding: var(--cyber-space-2) var(--cyber-space-2) var(--cyber-space-2)
+    var(--cyber-space-3);
+  background-color: color-mix(in srgb, var(--cyber-surface) 80%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  border-left: 3px solid var(--cyber-primary);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--cyber-primary) 6%, transparent);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    0 100%
+  );
+  font-family: var(--cyber-font-body);
+  color: var(--cyber-text);
+}
+
+.cyber-toast__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.cyber-toast__title {
+  font-family: var(--cyber-font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--cyber-primary);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-toast__message {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-toast__close {
+  all: unset;
+  cursor: pointer;
+  flex: none;
+  padding: 0.1em 0.35em;
+  font-family: var(--cyber-font-mono);
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--cyber-text-dim);
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.cyber-toast__close:hover,
+.cyber-toast__close:focus-visible {
+  color: var(--cyber-primary);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+/* -- variants ----------------------------------------------------------------
+   Each swaps the local primary and re-derives the tokens this component
+   consumes — derived tokens inherited from the theme scope don't
+   recompute here (see tokens.css). */
+.cyber-toast--success {
+  --cyber-primary: var(--cyber-success);
+  --cyber-border: color-mix(in srgb, var(--cyber-success) 50%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-success) 55%, transparent);
+}
+
+.cyber-toast--warning {
+  --cyber-primary: var(--cyber-warning);
+  --cyber-border: color-mix(in srgb, var(--cyber-warning) 50%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-warning) 55%, transparent);
+}
+
+.cyber-toast--danger {
+  --cyber-primary: var(--cyber-danger);
+  --cyber-border: color-mix(in srgb, var(--cyber-danger) 50%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-danger) 55%, transparent);
+}
+
+/* -- enter / leave (reduced-motion: toasts just appear) --------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-toast {
+    animation: cyber-toast-in 0.2s ease-out;
+  }
+
+  .cyber-toast[data-leaving] {
+    animation: cyber-toast-out 0.18s ease-in forwards;
+  }
+}
+
+@keyframes cyber-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes cyber-toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}

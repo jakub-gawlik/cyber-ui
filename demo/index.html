@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cyber-ui demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet"
+  />
+  <script type="module" src="./main.js"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 2rem clamp(1rem, 5vw, 4rem) 6rem;
+      box-sizing: border-box;
+    }
+
+    .demo-section {
+      margin-top: 3rem;
+    }
+
+    .demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+      max-width: 72rem;
+    }
+
+    .demo-note {
+      margin: 0.4rem 0 0;
+      font-size: 0.85rem;
+    }
+
+    header.demo-hero {
+      padding: 3rem 0 1rem;
+    }
+
+    /* vivid backdrop to make the glass blur visible */
+    .demo-glass-stage {
+      position: relative;
+      margin-top: 1rem;
+      padding: 3rem;
+      max-width: 44rem;
+      background:
+        radial-gradient(circle at 20% 30%, #ff2a6d55, transparent 40%),
+        radial-gradient(circle at 80% 20%, #00e5ff44, transparent 45%),
+        radial-gradient(circle at 60% 85%, #ffc85733, transparent 40%),
+        repeating-linear-gradient(45deg, #0d1a2b 0 24px, #091322 24px 48px);
+    }
+  </style>
+</head>
+<body class="cyber-screen cyber-fx-grid">
+  <header class="demo-hero">
+    <h1 class="cyber-heading cyber-fx-glitch" data-text="CYBER-UI" style="font-size: 2.2rem">CYBER-UI</h1>
+    <p class="cyber-terminal demo-note">// framework-agnostic components — css core + lit elements</p>
+    <div class="demo-row" id="theme-switcher">
+      <span class="cyber-label">Theme:</span>
+      <button class="cyber-btn cyber-btn--sm" data-theme="netrunner">Netrunner</button>
+      <button class="cyber-btn cyber-btn--sm" data-theme="crimson">Crimson</button>
+      <button class="cyber-btn cyber-btn--sm" data-theme="phosphor">Phosphor</button>
+      <button class="cyber-btn cyber-btn--sm" data-theme="synthwave">Synthwave</button>
+      <button class="cyber-btn cyber-btn--sm" data-theme="ghost">Ghost</button>
+    </div>
+    <p class="cyber-text cyber-text--dim demo-note">
+      One attribute — <code>data-cyber-theme</code> on <code>&lt;html&gt;</code>
+      or any container — swaps the whole token set, CSS classes and shadow-DOM
+      elements alike. The crimson panel below stays crimson: themes scope to
+      their subtree.
+    </p>
+  </header>
+
+  <!-- ======================================================= buttons -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Buttons</h2>
+    <div class="demo-row">
+      <button class="cyber-btn">Default</button>
+      <button class="cyber-btn cyber-btn--primary">Primary</button>
+      <button class="cyber-btn cyber-btn--danger">Danger</button>
+      <span class="cyber-glow"><button class="cyber-btn">Glow wrap</button></span>
+      <button class="cyber-btn cyber-btn--sm">Small</button>
+      <button class="cyber-btn cyber-btn--lg">Large</button>
+      <button class="cyber-btn" disabled>Disabled</button>
+    </div>
+  </section>
+
+  <!-- ===================================================== badges etc -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Badges &amp; dividers</h2>
+    <div class="demo-row">
+      <span class="cyber-badge">Online</span>
+      <span class="cyber-badge cyber-badge--accent">Priority</span>
+      <span class="cyber-badge cyber-badge--warning">Degraded</span>
+      <span class="cyber-badge cyber-badge--danger">Hostile</span>
+      <span class="cyber-badge cyber-badge--solid">v0.1.0</span>
+    </div>
+    <div class="cyber-divider" role="separator">Sector 7G</div>
+    <hr class="cyber-divider" />
+  </section>
+
+  <!-- ======================================================== cards -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Card — CSS classes vs &lt;cyber-card&gt;</h2>
+    <p class="cyber-text cyber-text--dim demo-note">
+      Desktop: hover lifts the card and zooms the media. Touch devices skip
+      hover entirely (<code>@media (hover: hover)</code>) and get scroll-driven
+      reveal + press states instead.
+    </p>
+    <div class="demo-grid">
+      <!-- pure CSS usage -->
+      <article class="cyber-card cyber-fx-reveal">
+        <figure class="cyber-card__media">
+          <img id="img-css" alt="Nebula render" />
+        </figure>
+        <div class="cyber-card__body">
+          <h3 class="cyber-card__title">Signal Lost</h3>
+          <p class="cyber-card__content">
+            Pure CSS classes — no JavaScript involved. Long-range sensors
+            report an anomaly near the Kerbol system.
+          </p>
+        </div>
+        <footer class="cyber-card__footer">
+          <a class="cyber-link" href="#">Details</a>
+          <a class="cyber-link cyber-link--accent" href="#">Dismiss</a>
+        </footer>
+      </article>
+
+      <!-- web component usage -->
+      <cyber-card class="cyber-fx-reveal">
+        <img id="img-wc" slot="media" alt="Nebula render" />
+        <span slot="title">First Contact</span>
+        <p style="margin: 0">
+          Same stylesheet, rendered by the <code>&lt;cyber-card&gt;</code>
+          element with slots. An unidentified fleet has entered the outer rim.
+        </p>
+        <a slot="footer" href="#">Hail</a>
+        <a slot="footer" href="#">Evade</a>
+      </cyber-card>
+
+      <!-- per-instance theme override -->
+      <cyber-card class="cyber-fx-reveal" style="--cyber-primary: #ff2a6d">
+        <span slot="title">Token Override</span>
+        <p style="margin: 0">
+          This instance sets <code>--cyber-primary: #ff2a6d</code> inline.
+          Tokens inherit through shadow DOM, so one custom property rethemes
+          the whole card.
+        </p>
+        <a slot="footer" href="#">Acknowledge</a>
+      </cyber-card>
+    </div>
+  </section>
+
+  <!-- ======================================================== panel -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Panel &amp; forms</h2>
+    <div class="demo-grid">
+      <div class="cyber-panel">
+        <div class="cyber-panel__header">
+          <span>Fleet Command</span>
+          <span class="cyber-badge cyber-badge--warning">Standby</span>
+        </div>
+        <div class="cyber-panel__body">
+          <div class="cyber-field">
+            <label for="callsign">Callsign</label>
+            <input id="callsign" class="cyber-input" placeholder="ISS Aurora" />
+          </div>
+          <br />
+          <div class="cyber-field">
+            <label for="sector">Sector</label>
+            <select id="sector" class="cyber-select">
+              <option>Alpha Quadrant</option>
+              <option>Perseus Arm</option>
+              <option>Outer Rim</option>
+            </select>
+          </div>
+          <br />
+          <div class="demo-row">
+            <label class="cyber-checkbox">
+              <input type="checkbox" checked /> <span>Shields</span>
+            </label>
+            <label class="cyber-checkbox">
+              <input type="checkbox" /> <span>Cloak</span>
+            </label>
+          </div>
+          <div class="demo-row">
+            <label class="cyber-radio">
+              <input type="radio" name="alert" checked /> <span>Green</span>
+            </label>
+            <label class="cyber-radio">
+              <input type="radio" name="alert" /> <span>Yellow</span>
+            </label>
+            <label class="cyber-radio">
+              <input type="radio" name="alert" /> <span>Red</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="cyber-panel">
+        <div class="cyber-panel__header"><span>Comms Log</span></div>
+        <div class="cyber-panel__body">
+          <textarea class="cyber-input" placeholder="Transmission draft…"></textarea>
+          <p class="cyber-terminal demo-note">&gt; channel open: 442.8 MHz</p>
+          <p class="cyber-text cyber-text--dim demo-note">
+            Inputs are styled native elements, so v-model / controlled inputs
+            work untouched in any framework.
+          </p>
+        </div>
+      </div>
+
+      <!-- scoped theme: this panel ignores the page theme -->
+      <div class="cyber-panel" data-cyber-theme="crimson">
+        <div class="cyber-panel__header">
+          <span>Intruder Alert</span>
+          <span class="cyber-badge cyber-badge--danger">Hostile</span>
+        </div>
+        <div class="cyber-panel__body">
+          <p class="cyber-text demo-note">
+            This panel carries <code>data-cyber-theme="crimson"</code>, so it
+            keeps its own palette whatever the page theme is — borders and
+            glows re-derive from the scoped colors automatically.
+          </p>
+          <div class="demo-row">
+            <button class="cyber-btn cyber-btn--primary cyber-btn--sm">Lockdown</button>
+            <button class="cyber-btn cyber-btn--sm">Ignore</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= game ui -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Game UI — progress, stats, tooltips, toasts</h2>
+
+    <div class="demo-grid">
+      <div class="cyber-panel">
+        <div class="cyber-panel__header"><span>Ship Systems</span></div>
+        <div class="cyber-panel__body" style="display: flex; flex-direction: column; gap: 1rem">
+          <div class="cyber-progress" style="--cyber-progress: 72%">
+            <div class="cyber-progress__label"><span>Hull</span><span>72%</span></div>
+            <div class="cyber-progress__track" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+              <div class="cyber-progress__bar"></div>
+            </div>
+          </div>
+          <div class="cyber-progress cyber-progress--segmented cyber-progress--accent" style="--cyber-progress: 62.5%">
+            <div class="cyber-progress__label"><span>Shields</span><span>5/8</span></div>
+            <div class="cyber-progress__track" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="8">
+              <div class="cyber-progress__bar"></div>
+            </div>
+          </div>
+          <div class="cyber-progress cyber-progress--striped cyber-progress--success" style="--cyber-progress: 45%">
+            <div class="cyber-progress__label"><span>Research</span><span>45%</span></div>
+            <div class="cyber-progress__track" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
+              <div class="cyber-progress__bar"></div>
+            </div>
+          </div>
+          <div class="cyber-progress cyber-progress--danger" style="--cyber-progress: 14%">
+            <div class="cyber-progress__label"><span>Fuel</span><span>14%</span></div>
+            <div class="cyber-progress__track" role="progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">
+              <div class="cyber-progress__bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cyber-panel">
+        <div class="cyber-panel__header"><span>Empire Overview</span></div>
+        <div class="cyber-panel__body">
+          <div class="demo-row" style="gap: 2rem">
+            <div class="cyber-stat">
+              <span class="cyber-stat__label">Energy</span>
+              <span class="cyber-stat__value">12,480</span>
+              <span class="cyber-stat__delta cyber-stat__delta--up">+340/mo</span>
+            </div>
+            <div class="cyber-stat">
+              <span class="cyber-stat__label">Minerals</span>
+              <span class="cyber-stat__value">8,102</span>
+              <span class="cyber-stat__delta cyber-stat__delta--down">-85/mo</span>
+            </div>
+            <div class="cyber-stat">
+              <span class="cyber-stat__label">Fleet Cap</span>
+              <span class="cyber-stat__value">184/200</span>
+              <span class="cyber-stat__delta">stable</span>
+            </div>
+          </div>
+          <div class="demo-row" style="margin-top: 1.5rem">
+            <span class="cyber-tooltip" data-tooltip="Pure CSS: data-tooltip attribute, shows on hover and keyboard focus">
+              <button class="cyber-btn cyber-btn--sm">Tooltip (top)</button>
+            </span>
+            <span class="cyber-tooltip cyber-tooltip--bottom" data-tooltip="Position variants: --bottom, --left, --right">
+              <button class="cyber-btn cyber-btn--sm">Tooltip (bottom)</button>
+            </span>
+          </div>
+          <div class="demo-row" style="margin-top: 1rem">
+            <button class="cyber-btn cyber-btn--sm" id="toast-info">Toast</button>
+            <button class="cyber-btn cyber-btn--sm" id="toast-success">Success toast</button>
+            <button class="cyber-btn cyber-btn--sm cyber-btn--danger" id="toast-danger">Alert toast</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================== interactive -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Interactive — modal, tabs, dropdown, accordion</h2>
+
+    <div class="demo-row">
+      <button class="cyber-btn cyber-btn--primary" id="open-modal">Open modal</button>
+
+      <cyber-dropdown>
+        <button slot="trigger" class="cyber-btn">Actions ▾</button>
+        <button role="menuitem">Scan system</button>
+        <button role="menuitem">Open starmap</button>
+        <button role="menuitem">Jettison cargo</button>
+      </cyber-dropdown>
+    </div>
+
+    <cyber-modal id="demo-modal">
+      <span slot="title">Incoming Transmission</span>
+      <p style="margin: 0">
+        Hostile fleet detected on the outer rim. Native
+        <code>&lt;dialog&gt;</code> underneath: focus trap, Escape and
+        backdrop dismiss included.
+      </p>
+      <button slot="footer" class="cyber-btn">Ignore</button>
+      <button slot="footer" class="cyber-btn cyber-btn--primary">Engage</button>
+    </cyber-modal>
+
+    <div class="demo-grid" style="margin-top: 2rem">
+      <cyber-tabs>
+        <cyber-tab-panel label="Overview">
+          <p class="cyber-text cyber-text--dim" style="margin: 0">
+            Arrow keys navigate the tab strip (roving tabindex).
+          </p>
+        </cyber-tab-panel>
+        <cyber-tab-panel label="Fleet">
+          <p class="cyber-text cyber-text--dim" style="margin: 0">
+            14 vessels operational. 2 in drydock.
+          </p>
+        </cyber-tab-panel>
+        <cyber-tab-panel label="Research">
+          <p class="cyber-text cyber-text--dim" style="margin: 0">
+            Zero-point energy: 67% complete.
+          </p>
+        </cyber-tab-panel>
+      </cyber-tabs>
+
+      <cyber-accordion single>
+        <cyber-accordion-item heading="Propulsion" open>
+          Ion drive nominal. Jump capacity at 92%.
+        </cyber-accordion-item>
+        <cyber-accordion-item heading="Weapons">
+          Rail batteries loaded. Target lock offline.
+        </cyber-accordion-item>
+        <cyber-accordion-item heading="Life Support">
+          O₂ recyclers at full capacity.
+        </cyber-accordion-item>
+      </cyber-accordion>
+    </div>
+  </section>
+
+  <!-- ================================================== glass & motion -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Glass &amp; motion</h2>
+    <div class="demo-glass-stage">
+      <div class="cyber-panel cyber-glass cyber-fx-reveal">
+        <div class="cyber-panel__header">
+          <span>Frosted Holo-Panel</span>
+          <span class="cyber-badge">cyber-glass</span>
+        </div>
+        <div class="cyber-panel__body cyber-text cyber-text--dim">
+          <code>.cyber-glass</code> uses <code>backdrop-filter</code> to blur
+          whatever sits behind it — compose it with any panel or card. This
+          whole block also carries <code>.cyber-fx-reveal</code>: on browsers
+          with scroll-driven animations it materialized as you scrolled here,
+          which is the touch-device stand-in for hover flourishes.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= effects -->
+  <section class="demo-section">
+    <h2 class="cyber-heading">Effects</h2>
+    <div class="demo-row">
+      <span class="cyber-heading cyber-fx-glitch" data-text="GLITCH" style="font-size: 1.6rem">GLITCH</span>
+      <span class="cyber-heading cyber-fx-holo" style="font-size: 1.6rem">HOLOGRAM</span>
+      <span class="cyber-heading cyber-fx-flicker" style="font-size: 1.6rem">FLICKER</span>
+    </div>
+    <div class="demo-grid">
+      <div class="cyber-panel cyber-fx-scanlines">
+        <div class="cyber-panel__header"><span>Scanlines</span></div>
+        <div class="cyber-panel__body cyber-text cyber-text--dim">
+          Any element can take <code>.cyber-fx-scanlines</code>. The page
+          background uses <code>.cyber-fx-grid</code>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

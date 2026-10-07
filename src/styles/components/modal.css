@@ -1,0 +1,101 @@
+/* ==========================================================================
+   .cyber-modal — dialog frame. Used by <cyber-modal> (shadow DOM) and
+   usable directly on a native <dialog class="cyber-modal"> element.
+   ========================================================================== */
+
+.cyber-modal {
+  padding: 0;
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  background: var(--cyber-surface);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-body);
+  min-width: min(26rem, 90vw);
+  max-width: min(36rem, 92vw);
+  clip-path: polygon(
+    var(--cyber-clip) 0,
+    100% 0,
+    100% calc(100% - var(--cyber-clip)),
+    calc(100% - var(--cyber-clip)) 100%,
+    0 100%,
+    0 var(--cyber-clip)
+  );
+  box-shadow: inset 0 0 40px color-mix(in srgb, var(--cyber-primary) 6%, transparent);
+}
+
+.cyber-modal::backdrop {
+  /* fallback for engines where custom properties don't reach ::backdrop */
+  background: var(--cyber-scrim, rgba(2, 6, 12, 0.7));
+  backdrop-filter: blur(3px) saturate(1.2);
+}
+
+.cyber-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cyber-space-3);
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--cyber-primary) 16%, transparent),
+    transparent 75%
+  );
+  border-bottom: var(--cyber-border-width) solid var(--cyber-border-dim);
+  font-family: var(--cyber-font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-modal__close {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--cyber-font-mono);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.2em 0.45em;
+  color: var(--cyber-text-dim);
+  border: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.cyber-modal__close:hover {
+  color: var(--cyber-danger);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--cyber-danger) 60%, transparent);
+}
+
+.cyber-modal__close:focus-visible {
+  border-color: var(--cyber-border);
+  color: var(--cyber-primary);
+}
+
+.cyber-modal__body {
+  padding: var(--cyber-space-3);
+  color: var(--cyber-text-dim);
+  line-height: 1.55;
+}
+
+.cyber-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--cyber-space-2);
+  padding: var(--cyber-space-2) var(--cyber-space-3) var(--cyber-space-3);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-modal[open] {
+    animation: cyber-modal-in 0.18s ease-out;
+  }
+
+  @keyframes cyber-modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

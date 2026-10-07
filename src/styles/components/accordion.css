@@ -1,0 +1,100 @@
+/* ==========================================================================
+   .cyber-accordion — stacked expanding sections. Used by
+   <cyber-accordion-item> internally; class-only usage styles your own
+   button + region markup (drive state with aria-expanded).
+   ========================================================================== */
+
+.cyber-accordion {
+  display: flex;
+  flex-direction: column;
+  border: var(--cyber-border-width) solid var(--cyber-border-dim);
+}
+
+.cyber-accordion__trigger {
+  all: unset;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cyber-space-3);
+  width: 100%;
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  font-family: var(--cyber-font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cyber-text-dim);
+  cursor: pointer;
+  border-top: var(--cyber-border-width) solid var(--cyber-border-dim);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.cyber-accordion__trigger:first-child,
+:first-child > .cyber-accordion__trigger {
+  border-top: 0;
+}
+
+.cyber-accordion__trigger:hover {
+  color: var(--cyber-text);
+  background: var(--cyber-tint);
+}
+
+.cyber-accordion__trigger:focus-visible {
+  outline: 1px solid var(--cyber-primary);
+  outline-offset: -2px;
+}
+
+.cyber-accordion__trigger[aria-expanded="true"] {
+  color: var(--cyber-primary);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--cyber-primary) 10%, transparent),
+    transparent 70%
+  );
+}
+
+/* chevron */
+.cyber-accordion__trigger::after {
+  content: "";
+  width: 0.45em;
+  height: 0.45em;
+  flex: none;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.cyber-accordion__trigger[aria-expanded="true"]::after {
+  transform: rotate(225deg);
+}
+
+/* collapsible region — grid-rows trick animates height without JS */
+.cyber-accordion__region {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+
+.cyber-accordion__region[data-open] {
+  grid-template-rows: 1fr;
+}
+
+.cyber-accordion__region > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.cyber-accordion__content {
+  padding: 0 var(--cyber-space-3);
+  color: var(--cyber-text-dim);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.cyber-accordion__region[data-open] .cyber-accordion__content {
+  padding: var(--cyber-space-2) var(--cyber-space-3) var(--cyber-space-3);
+}

@@ -1,0 +1,71 @@
+/* ==========================================================================
+   .cyber-input — text inputs & textareas. Styles the native element, so
+   framework bindings (v-model, controlled inputs) work untouched.
+   .cyber-field — optional label + input stack.
+   ========================================================================== */
+
+.cyber-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cyber-space-1);
+}
+
+.cyber-field > label {
+  font-family: var(--cyber-font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-input {
+  appearance: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55em 0.9em;
+  background: color-mix(in srgb, var(--cyber-primary) 4%, transparent);
+  border: var(--cyber-border-width) solid var(--cyber-border-dim);
+  border-left: 2px solid var(--cyber-border);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  caret-color: var(--cyber-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cyber-input::placeholder {
+  color: var(--cyber-text-dim);
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8em;
+}
+
+.cyber-input:hover {
+  border-color: var(--cyber-border);
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--cyber-primary);
+  background: var(--cyber-tint);
+  box-shadow: inset 0 0 12px color-mix(in srgb, var(--cyber-primary) 10%, transparent),
+    0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cyber-input:user-invalid {
+  border-color: var(--cyber-danger);
+  border-left-color: var(--cyber-danger);
+}
+
+textarea.cyber-input {
+  resize: vertical;
+  min-height: 5em;
+  line-height: 1.5;
+}

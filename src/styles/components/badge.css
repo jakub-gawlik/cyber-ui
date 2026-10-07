@@ -1,0 +1,56 @@
+/* ==========================================================================
+   .cyber-badge — small status chip.
+   Variants: --accent, --warning, --danger, --solid.
+   ========================================================================== */
+
+.cyber-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.2em 0.7em;
+  border: 1px solid var(--cyber-border);
+  background: var(--cyber-tint);
+  color: var(--cyber-primary);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+/* status dot */
+.cyber-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.cyber-badge--accent {
+  --cyber-primary: var(--cyber-accent);
+  color: var(--cyber-accent);
+  border-color: color-mix(in srgb, var(--cyber-accent) 50%, transparent);
+  background: color-mix(in srgb, var(--cyber-accent) 8%, transparent);
+}
+
+.cyber-badge--warning {
+  color: var(--cyber-warning);
+  border-color: color-mix(in srgb, var(--cyber-warning) 50%, transparent);
+  background: color-mix(in srgb, var(--cyber-warning) 8%, transparent);
+}
+
+.cyber-badge--danger {
+  color: var(--cyber-danger);
+  border-color: color-mix(in srgb, var(--cyber-danger) 50%, transparent);
+  background: color-mix(in srgb, var(--cyber-danger) 8%, transparent);
+}
+
+.cyber-badge--solid {
+  background: var(--cyber-primary);
+  color: var(--cyber-text-on-primary);
+}
+
+.cyber-badge--solid::before {
+  box-shadow: none;
+}

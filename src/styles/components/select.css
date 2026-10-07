@@ -1,0 +1,46 @@
+/* ==========================================================================
+   .cyber-select — styled native <select> with a custom chevron.
+   ========================================================================== */
+
+.cyber-select {
+  appearance: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55em 2.4em 0.55em 0.9em;
+  background-color: color-mix(in srgb, var(--cyber-primary) 4%, transparent);
+  /* chevron drawn with two gradient strokes */
+  background-image: linear-gradient(45deg, transparent 50%, var(--cyber-primary) 50%),
+    linear-gradient(135deg, var(--cyber-primary) 50%, transparent 50%);
+  background-position: calc(100% - 1.2em) 50%, calc(100% - 0.85em) 50%;
+  background-size: 0.35em 0.35em;
+  background-repeat: no-repeat;
+  border: var(--cyber-border-width) solid var(--cyber-border-dim);
+  border-left: 2px solid var(--cyber-border);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cyber-select:hover {
+  border-color: var(--cyber-border);
+}
+
+.cyber-select:focus {
+  outline: none;
+  border-color: var(--cyber-primary);
+  box-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* dropdown list rendering is mostly OS-controlled; keep options legible */
+.cyber-select option {
+  background: var(--cyber-surface);
+  color: var(--cyber-text);
+}

@@ -1,0 +1,60 @@
+/* ==========================================================================
+   .cyber-checkbox — native checkbox, visually replaced; keyboard and
+   focus behavior stay native.
+   <label class="cyber-checkbox">
+     <input type="checkbox"> <span>Enable shields</span>
+   </label>
+   ========================================================================== */
+
+.cyber-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cyber-space-2);
+  font-family: var(--cyber-font-body);
+  color: var(--cyber-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cyber-checkbox input[type="checkbox"] {
+  appearance: none;
+  margin: 0;
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  background: var(--cyber-tint);
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.cyber-checkbox input[type="checkbox"]::before {
+  content: "";
+  width: 0.55em;
+  height: 0.55em;
+  background: var(--cyber-primary);
+  box-shadow: 0 0 6px var(--cyber-glow-color);
+  transform: scale(0);
+  transition: transform 0.12s ease;
+}
+
+.cyber-checkbox input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+.cyber-checkbox input[type="checkbox"]:focus-visible {
+  outline: 1px solid var(--cyber-primary);
+  outline-offset: 2px;
+}
+
+.cyber-checkbox input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cyber-checkbox:hover input[type="checkbox"]:not(:disabled) {
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--cyber-primary) 15%, transparent);
+}

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+demo-dist/
+*.tgz
+smoke/*/package-lock.json
+CLAUDE.md
+AGENTS.md
+.DS_Store

@@ -1,0 +1,87 @@
+/* ==========================================================================
+   .cyber-tooltip — pure-CSS tooltip from a data attribute. Shows on hover
+   and on keyboard focus.
+   <span class="cyber-tooltip" data-tooltip="Jump drive offline">
+     <button class="cyber-btn">Jump</button>
+   </span>
+   Put the class on a WRAPPER when the trigger is corner-clipped (buttons,
+   badges) — clip-path would cut the tooltip off the trigger itself.
+   Position variants: --bottom, --left, --right (default: top).
+   ========================================================================== */
+
+.cyber-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.cyber-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  z-index: 60;
+  width: max-content;
+  max-width: 240px;
+  padding: 0.45em 0.8em;
+  background: var(--cyber-surface);
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  border-left: 2px solid var(--cyber-primary);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--cyber-shade) 55%, transparent),
+    0 0 8px var(--cyber-glow-color);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  line-height: 1.4;
+  color: var(--cyber-text);
+  white-space: pre-line;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.cyber-tooltip:hover::after,
+.cyber-tooltip:focus-within::after,
+.cyber-tooltip:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* -- position variants ----------------------------------------------------- */
+.cyber-tooltip--bottom::after {
+  bottom: auto;
+  top: calc(100% + 10px);
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.cyber-tooltip--bottom:hover::after,
+.cyber-tooltip--bottom:focus-within::after {
+  transform: translateX(-50%) translateY(0);
+}
+
+.cyber-tooltip--right::after {
+  left: calc(100% + 10px);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+}
+
+.cyber-tooltip--right:hover::after,
+.cyber-tooltip--right:focus-within::after {
+  transform: translateY(-50%) translateX(0);
+}
+
+.cyber-tooltip--left::after {
+  left: auto;
+  right: calc(100% + 10px);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+}
+
+.cyber-tooltip--left:hover::after,
+.cyber-tooltip--left:focus-within::after {
+  transform: translateY(-50%) translateX(0);
+}

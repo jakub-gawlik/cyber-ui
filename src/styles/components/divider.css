@@ -1,0 +1,42 @@
+/* ==========================================================================
+   .cyber-divider — gradient hairline, optionally with a label.
+   <hr class="cyber-divider">
+   <div class="cyber-divider" role="separator">SECTION</div>
+   ========================================================================== */
+
+.cyber-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--cyber-space-3);
+  margin: var(--cyber-space-3) 0;
+  border: 0;
+  height: auto;
+  font-family: var(--cyber-font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-divider::before,
+.cyber-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--cyber-border) 30%,
+    var(--cyber-border) 70%,
+    transparent
+  );
+}
+
+/* plain <hr class="cyber-divider"> has no label: single full line */
+hr.cyber-divider::after {
+  display: none;
+}
+
+hr.cyber-divider::before {
+  background: linear-gradient(to right, var(--cyber-primary), transparent);
+}

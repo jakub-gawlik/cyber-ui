@@ -1,0 +1,59 @@
+/* ==========================================================================
+   .cyber-radio — native radio, visually replaced as a targeting diamond.
+   <label class="cyber-radio">
+     <input type="radio" name="x"> <span>Alpha</span>
+   </label>
+   ========================================================================== */
+
+.cyber-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cyber-space-2);
+  font-family: var(--cyber-font-body);
+  color: var(--cyber-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cyber-radio input[type="radio"] {
+  appearance: none;
+  margin: 0;
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  background: var(--cyber-tint);
+  transform: rotate(45deg);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.12s ease;
+}
+
+.cyber-radio input[type="radio"]::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--cyber-primary);
+  box-shadow: 0 0 6px var(--cyber-glow-color);
+  transform: scale(0);
+  transition: transform 0.12s ease;
+}
+
+.cyber-radio input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.cyber-radio input[type="radio"]:focus-visible {
+  outline: 1px solid var(--cyber-primary);
+  outline-offset: 3px;
+}
+
+.cyber-radio input[type="radio"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cyber-radio:hover input[type="radio"]:not(:disabled) {
+  box-shadow: 0 0 8px var(--cyber-glow-color);
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- Smoke test for the built package: references only dist/ output, the way
+     a CDN consumer would (unpkg.com/cyber-ui/dist/...). Serve the repo root
+     with any static server after `npm run build`, then open /demo/standalone.html -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cyber-ui standalone</title>
+  <link rel="stylesheet" href="../dist/cyber-ui.css" />
+  <script type="module" src="../dist/cyber-ui.js"></script>
+</head>
+<body class="cyber-screen" style="padding: 3rem">
+  <h1 class="cyber-heading">Standalone / CDN-style usage</h1>
+  <p class="cyber-terminal">// no bundler, no framework — dist output only</p>
+
+  <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; align-items: flex-start">
+    <button class="cyber-btn cyber-btn--primary">CSS layer works</button>
+
+    <cyber-card style="max-width: 20rem">
+      <span slot="title">Web components work</span>
+      <p style="margin: 0">
+        Registered by dist/cyber-ui.js, styled from its own shadow styles.
+      </p>
+      <a slot="footer" href="#">Confirm</a>
+    </cyber-card>
+
+    <cyber-card style="max-width: 20rem" data-cyber-theme="crimson">
+      <span slot="title">Themes work</span>
+      <p style="margin: 0">
+        This card is scoped to <code>data-cyber-theme="crimson"</code> from
+        the bundled themes.css.
+      </p>
+      <a slot="footer" href="#">Confirm</a>
+    </cyber-card>
+  </div>
+</body>
+</html>

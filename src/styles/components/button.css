@@ -1,0 +1,129 @@
+/* ==========================================================================
+   .cyber-btn — angular clipped button.
+   Variants: --primary (filled), --ghost (outline, default), --danger.
+   Sizes: --sm, --lg.
+   Note: clip-path removes outer box-shadows, so glow is done with inset
+   shadows + text glow; for an outer halo wrap the button in .cyber-glow.
+   ========================================================================== */
+
+.cyber-btn {
+  --_clip: calc(var(--cyber-clip) * 0.75);
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cyber-space-2);
+  padding: 0.55em 1.5em;
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  background: var(--cyber-tint);
+  color: var(--cyber-primary);
+  font-family: var(--cyber-font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  clip-path: polygon(
+    var(--_clip) 0,
+    100% 0,
+    100% calc(100% - var(--_clip)),
+    calc(100% - var(--_clip)) 100%,
+    0 100%,
+    0 var(--_clip)
+  );
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease,
+    text-shadow 0.15s ease;
+}
+
+.cyber-btn:hover,
+.cyber-btn:focus-visible {
+  background: color-mix(in srgb, var(--cyber-primary) 18%, transparent);
+  box-shadow: inset 0 0 14px var(--cyber-glow-color);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-btn:focus-visible {
+  outline: 2px solid var(--cyber-primary);
+  outline-offset: -4px;
+}
+
+/* press feedback — fires on touch too, where hover never does */
+.cyber-btn:active {
+  background: color-mix(in srgb, var(--cyber-primary) 30%, transparent);
+  transform: translateY(1px) scale(0.985);
+}
+
+/* light sweep across the face — real-pointer devices only */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .cyber-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      color-mix(in srgb, var(--cyber-highlight) 22%, transparent) 50%,
+      transparent 60%
+    );
+    transform: translateX(-130%);
+  }
+
+  .cyber-btn:hover::after {
+    transform: translateX(130%);
+    transition: transform 0.5s ease;
+  }
+}
+
+.cyber-btn:disabled,
+.cyber-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Variants ---------------------------------------------------------------- */
+.cyber-btn--primary {
+  background: var(--cyber-primary);
+  color: var(--cyber-text-on-primary);
+  border-color: var(--cyber-primary);
+}
+
+.cyber-btn--primary:hover,
+.cyber-btn--primary:focus-visible {
+  background: color-mix(in srgb, var(--cyber-primary) 85%, var(--cyber-highlight));
+  color: var(--cyber-text-on-primary);
+  box-shadow: inset 0 0 10px color-mix(in srgb, var(--cyber-highlight) 35%, transparent);
+  text-shadow: none;
+}
+
+.cyber-btn--danger {
+  /* swap the local primary and re-derive what this component consumes —
+     derived tokens inherited from the theme scope don't recompute here
+     (see tokens.css) */
+  --cyber-primary: var(--cyber-danger);
+  --cyber-border: color-mix(in srgb, var(--cyber-danger) 50%, transparent);
+  --cyber-tint: color-mix(in srgb, var(--cyber-danger) 8%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-danger) 55%, transparent);
+  color: var(--cyber-danger);
+}
+
+/* Sizes ------------------------------------------------------------------- */
+.cyber-btn--sm {
+  font-size: 0.72rem;
+  padding: 0.4em 1.1em;
+}
+
+.cyber-btn--lg {
+  font-size: 1rem;
+  padding: 0.7em 2em;
+}
+
+/* Outer-glow helper: wraps any clipped element to restore a halo.
+   <span class="cyber-glow"><button class="cyber-btn">…</button></span> */
+.cyber-glow {
+  display: inline-block;
+  filter: drop-shadow(0 0 8px var(--cyber-glow-color));
+}

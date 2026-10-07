@@ -1,0 +1,156 @@
+/* ==========================================================================
+   .cyber-card — content card: image media header, title + content body,
+   footer link row. Single source of truth: this file is bundled into the
+   global stylesheet AND imported (?inline) into <cyber-card>'s shadow root.
+   Keep selectors class-based so they work in both contexts.
+   ========================================================================== */
+
+.cyber-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cyber-surface-glass);
+  border: var(--cyber-border-width) solid var(--cyber-border-dim);
+  border-top-color: var(--cyber-border);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-body);
+  clip-path: polygon(
+    var(--cyber-clip) 0,
+    100% 0,
+    100% calc(100% - var(--cyber-clip)),
+    calc(100% - var(--cyber-clip)) 100%,
+    0 100%,
+    0 var(--cyber-clip)
+  );
+  /* diagonal accent lines along the two clipped corners */
+  background-image: linear-gradient(
+      135deg,
+      transparent calc(50% - 1px),
+      var(--cyber-border) calc(50% - 1px),
+      var(--cyber-border) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    ),
+    linear-gradient(
+      135deg,
+      transparent calc(50% - 1px),
+      var(--cyber-border) calc(50% - 1px),
+      var(--cyber-border) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    );
+  background-repeat: no-repeat;
+  /* each tile's anti-diagonal coincides with a cut edge, drawing its border */
+  background-size: var(--cyber-clip) var(--cyber-clip);
+  background-position: top left, bottom right;
+  box-shadow: inset 0 0 0 transparent;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.cyber-card:hover {
+  border-color: var(--cyber-border);
+  box-shadow: inset 0 0 24px color-mix(in srgb, var(--cyber-primary) 10%, transparent);
+}
+
+/* lift + media zoom — real-pointer devices only, so touch never sticks */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .cyber-card {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.25s ease;
+  }
+
+  .cyber-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .cyber-card__media img,
+  .cyber-card__media ::slotted(img) {
+    transition: transform 0.45s ease;
+  }
+
+  .cyber-card:hover .cyber-card__media img,
+  .cyber-card:hover .cyber-card__media ::slotted(img) {
+    transform: scale(1.05);
+  }
+}
+
+/* -- media header -------------------------------------------------------- */
+.cyber-card__media {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: var(--cyber-border-width) solid var(--cyber-border);
+}
+
+.cyber-card__media img,
+.cyber-card__media ::slotted(img) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.9) contrast(1.05);
+}
+
+/* scanline + color tint over the image */
+.cyber-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--cyber-surface) 65%, transparent),
+      transparent 55%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--cyber-shade) 18%, transparent) 0 1px,
+      transparent 1px 3px
+    );
+}
+
+/* -- body ----------------------------------------------------------------- */
+.cyber-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cyber-space-2);
+  padding: var(--cyber-space-3);
+  flex: 1;
+}
+
+.cyber-card__title {
+  margin: 0;
+  font-family: var(--cyber-font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cyber-text);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+/* accent tick under the title */
+.cyber-card__title::after {
+  content: "";
+  display: block;
+  margin-top: var(--cyber-space-2);
+  width: 2.5rem;
+  height: 2px;
+  background: linear-gradient(to right, var(--cyber-primary), transparent);
+}
+
+.cyber-card__content {
+  margin: 0;
+  color: var(--cyber-text-dim);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+/* -- footer ---------------------------------------------------------------
+   .cyber-link styles live in link.css (global layer); the shadow-DOM
+   version restyles slotted anchors with the same look below. */
+.cyber-card__footer {
+  display: flex;
+  gap: var(--cyber-space-3);
+  align-items: center;
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  border-top: var(--cyber-border-width) solid var(--cyber-border-dim);
+  background: color-mix(in srgb, var(--cyber-primary) 4%, transparent);
+}

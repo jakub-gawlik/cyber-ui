@@ -1,0 +1,82 @@
+/* ==========================================================================
+   cyber-ui design tokens
+   Every visual decision flows from these. Override any of them on :root,
+   a container, or a single element (`style="--cyber-primary: #ff2a6d"`) —
+   they inherit through shadow DOM, so CSS classes and <cyber-*> elements
+   retheme together.
+
+   Theming: a theme is just a set of overrides for the base tokens below.
+   Built-in sets live in themes.css and apply via data-cyber-theme on
+   <html> or any container. To compose your own, define the same tokens
+   under your own name:
+
+     [data-cyber-theme="mytheme"] {
+       --cyber-primary: #f7f01d;
+       --cyber-accent: #7df9ff;
+       … any token you skip falls back to the surrounding theme
+     }
+
+   The derived tokens (border, tint, glow, scrim) recompute automatically
+   on every data-cyber-theme scope — see the note on the second block.
+   ========================================================================== */
+
+:root {
+  /* -- color: the themeable surface -------------------------------------- */
+  --cyber-bg: #05080f;
+  --cyber-surface: #0a1220;
+  --cyber-surface-glass: rgba(10, 20, 34, 0.82);
+  --cyber-primary: #00e5ff;
+  --cyber-accent: #ff2a6d;
+  --cyber-warning: #ffc857;
+  --cyber-danger: #ff4d5e;
+  --cyber-success: #3dffa0;
+  --cyber-text: #d7edf5;
+  --cyber-text-dim: #7e98a8;
+  --cyber-text-on-primary: #041019;
+
+  /* neutral mixers: sheens and stripes mix --cyber-highlight toward
+     transparent, scanline/shadow overlays mix --cyber-shade. Retint them
+     for palettes where pure white/black reads wrong (e.g. light themes). */
+  --cyber-highlight: #ffffff;
+  --cyber-shade: #000000;
+
+  /* -- effects ----------------------------------------------------------- */
+  --cyber-clip: 12px; /* corner-cut size for the angular frame look */
+  --cyber-border-width: 1px;
+
+  /* -- typography (webfonts are the consumer's choice; demo loads
+        Orbitron / Rajdhani / Share Tech Mono) ----------------------------- */
+  --cyber-font-display: "Orbitron", "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  --cyber-font-body: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  --cyber-font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* -- spacing ----------------------------------------------------------- */
+  --cyber-space-1: 0.25rem;
+  --cyber-space-2: 0.5rem;
+  --cyber-space-3: 1rem;
+  --cyber-space-4: 2rem;
+}
+
+/* -- derived tokens ----------------------------------------------------------
+   Computed from the colors above; redefine them directly only for
+   fine-grained control (or if color-mix support is a concern).
+
+   CSS resolves var() inside a custom property where the property is
+   DEFINED, not where it's used — so these are declared on every
+   data-cyber-theme scope as well as :root. A theme applied to a container
+   therefore re-derives them from its own colors instead of inheriting
+   stale :root values. Component color variants (.cyber-btn--danger, …)
+   re-declare the derived tokens they consume for the same reason. */
+:root,
+[data-cyber-theme] {
+  --cyber-border: color-mix(in srgb, var(--cyber-primary) 50%, transparent);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-primary) 20%, transparent);
+  --cyber-tint: color-mix(in srgb, var(--cyber-primary) 8%, transparent);
+
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-primary) 55%, transparent);
+  --cyber-glow: 0 0 10px var(--cyber-glow-color);
+  --cyber-glow-strong: 0 0 4px var(--cyber-glow-color), 0 0 18px var(--cyber-glow-color);
+
+  /* modal backdrop / overlay dim layer */
+  --cyber-scrim: color-mix(in srgb, var(--cyber-bg) 72%, transparent);
+}

@@ -1,0 +1,66 @@
+{
+  "name": "cyber-ui",
+  "version": "0.1.0",
+  "description": "Cyberpunk / Stellaris-flavored, framework-agnostic UI components: a zero-JS CSS core plus Lit web components.",
+  "type": "module",
+  "license": "MIT",
+  "author": "info@caasi.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakub-gawlik/cyber-ui.git"
+  },
+  "homepage": "https://github.com/jakub-gawlik/cyber-ui#readme",
+  "bugs": "https://github.com/jakub-gawlik/cyber-ui/issues",
+  "keywords": [
+    "cyberpunk",
+    "sci-fi",
+    "ui",
+    "components",
+    "web-components",
+    "lit",
+    "css",
+    "design-system"
+  ],
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/cyber-ui.js",
+  "module": "./dist/cyber-ui.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/cyber-ui.js"
+    },
+    "./styles.css": "./dist/cyber-ui.css"
+  },
+  "sideEffects": [
+    "./dist/cyber-ui.js",
+    "./src/index.ts",
+    "./src/components/*.ts",
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "pack:smoke": "npm pack --pack-destination smoke && mv smoke/cyber-ui-*.tgz smoke/cyber-ui.tgz",
+    "preview": "vite preview",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run typecheck && npm run test"
+  },
+  "dependencies": {
+    "lit": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@vitest/browser-playwright": "^5.0.3",
+    "typescript": "~5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^5.0.3"
+  }
+}
