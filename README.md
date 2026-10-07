@@ -10,19 +10,19 @@ Cyberpunk / Stellaris-flavored UI components that work in **any** web project â€
 ## Install
 
 ```sh
-npm install cyber-ui
+npm install @jgawlik/cyber-ui
 ```
 
 ```js
-import 'cyber-ui/styles.css'; // tokens + CSS-class components
-import 'cyber-ui';            // registers <cyber-*> elements
+import '@jgawlik/cyber-ui/styles.css'; // tokens + CSS-class components
+import '@jgawlik/cyber-ui';            // registers <cyber-*> elements
 ```
 
 Or CDN, no build step:
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/cyber-ui/dist/cyber-ui.css" />
-<script type="module" src="https://unpkg.com/cyber-ui/dist/cyber-ui.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@jgawlik/cyber-ui/dist/cyber-ui.css" />
+<script type="module" src="https://unpkg.com/@jgawlik/cyber-ui/dist/cyber-ui.js"></script>
 ```
 
 ## Quick taste
@@ -54,7 +54,7 @@ Web components (same stylesheet, slotted):
 Toasts, imperatively:
 
 ```js
-import { toast } from 'cyber-ui';
+import { toast } from '@jgawlik/cyber-ui';
 toast('Jump complete');
 toast('Hull integrity critical', { title: 'Alert', variant: 'danger', duration: 8000 });
 ```
