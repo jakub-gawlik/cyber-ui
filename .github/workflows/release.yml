@@ -1,0 +1,52 @@
+name: Release
+
+# Controlled releases: publishing happens ONLY here, triggered by a v* tag.
+# Gates run via prepublishOnly (typecheck + browser tests) and prepack (build).
+# Auth: npm trusted publishing (OIDC) — configure this repo + release.yml as a
+# Trusted Publisher in the package settings on npmjs.com (no token to rotate).
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # create the GitHub release
+  id-token: write # npm trusted publishing / provenance
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - name: Verify tag matches package.json version
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION" >&2
+            exit 1
+          fi
+      - name: Verify CHANGELOG has an entry for this version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          grep -q "^## \[$TAG_VERSION\]" CHANGELOG.md || {
+            echo "CHANGELOG.md has no section for $TAG_VERSION" >&2
+            exit 1
+          }
+      - run: npx playwright install --with-deps chromium
+      # prepublishOnly runs typecheck + tests, prepack builds dist/
+      - run: npm publish
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

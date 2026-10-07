@@ -24,6 +24,7 @@ docs/                         # this documentation
 dist/                         # build output (gitignored; produced by prepack / npm run build)
 .github/workflows/
   ci.yml                      # typecheck + build + tests + smoke-app builds on push/PR
+  release.yml                 # tag-driven npm publish + GitHub release (the only publish path)
 ```
 
 ## One stylesheet, two consumers
@@ -125,7 +126,28 @@ events, keyboard navigation, and open/close state transitions are the contract.
 
 ## Releasing
 
-1. Update the version in `package.json` and move the `Unreleased` notes in
-   `CHANGELOG.md` under the new version heading.
-2. `npm publish` — `prepublishOnly` runs typecheck + tests, `prepack` builds.
-3. Tag the release: `git tag v<version> && git push --tags`.
+Releases are **controlled and tag-driven**: nothing is ever published from a
+local machine. Pushing a `v*` tag triggers `.github/workflows/release.yml`,
+which verifies the tag matches `package.json`, verifies `CHANGELOG.md` has a
+section for the version, runs the full gates (typecheck + browser tests via
+`prepublishOnly`, build via `prepack`), publishes to npm, and creates a GitHub
+release.
+
+Procedure for a release:
+
+1. Promote the `Unreleased` notes in `CHANGELOG.md` to a new
+   `## [<version>] - <date>` section and commit that.
+2. `npm version patch|minor|major` — bumps `package.json`, commits, and
+   creates the `v<version>` tag in one step (requires a clean tree).
+3. `git push && git push --tags` — the tag push starts the release workflow.
+
+One-time setup on npmjs.com (package `@jgawlik/cyber-ui` → Settings →
+Trusted Publisher): register **GitHub Actions** with this repository and
+workflow filename `release.yml`. That lets CI publish via OIDC — no npm token
+stored in the repo, and local 2FA stays enforced for everything else.
+(Fallback if trusted publishing isn't configured: add an npm *automation*
+granular token as the `NODE_AUTH_TOKEN` secret and pass it to the publish
+step.)
+
+Released so far: `v0.1.0` (2026-10-07), the initial publish — done manually
+before this pipeline existed; every later release goes through the workflow.
