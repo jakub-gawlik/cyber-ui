@@ -18,27 +18,27 @@ share one theme.
 ## Install
 
 ```sh
-npm install cyber-ui
+npm install @jgawlik/cyber-ui
 ```
 
 ```js
-import "cyber-ui/styles.css"; // tokens + CSS-class components (dist/cyber-ui.css)
-import "cyber-ui"; // registers every <cyber-*> element
+import "@jgawlik/cyber-ui/styles.css"; // tokens + CSS-class components (dist/cyber-ui.css)
+import "@jgawlik/cyber-ui"; // registers every <cyber-*> element
 ```
 
 Named imports give you the element classes, the imperative toast API, and types:
 
 ```ts
-import { toast, CyberModal, type ToastOptions } from "cyber-ui";
+import { toast, CyberModal, type ToastOptions } from "@jgawlik/cyber-ui";
 ```
 
 ### CDN, no build step
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/cyber-ui/dist/cyber-ui.css" />
+<link rel="stylesheet" href="https://unpkg.com/@jgawlik/cyber-ui/dist/cyber-ui.css" />
 <script
   type="module"
-  src="https://unpkg.com/cyber-ui/dist/cyber-ui.js"
+  src="https://unpkg.com/@jgawlik/cyber-ui/dist/cyber-ui.js"
 ></script>
 ```
 

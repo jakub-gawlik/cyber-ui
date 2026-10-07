@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'cyber-ui';
+import { toast } from '@jgawlik/cyber-ui';
 
 const EVENTS = [
   {

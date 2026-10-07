@@ -7,7 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "cyber-ui": "file:../cyber-ui.tgz",
+    "@jgawlik/cyber-ui": "file:../cyber-ui.tgz",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

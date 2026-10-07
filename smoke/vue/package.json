@@ -7,7 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "cyber-ui": "file:../cyber-ui.tgz",
+    "@jgawlik/cyber-ui": "file:../cyber-ui.tgz",
     "vue": "^3.5.0"
   },
   "devDependencies": {

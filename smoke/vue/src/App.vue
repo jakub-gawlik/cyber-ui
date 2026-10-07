@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { toast } from 'cyber-ui';
+import { toast } from '@jgawlik/cyber-ui';
 
 const events = ref([
   {

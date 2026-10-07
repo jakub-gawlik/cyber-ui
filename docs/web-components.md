@@ -1,6 +1,6 @@
 # Web components
 
-Importing `cyber-ui` registers every element. Each element imports its component
+Importing `@jgawlik/cyber-ui` registers every element. Each element imports its component
 stylesheet (`?inline`) into its shadow root, shares tokens with the global
 stylesheet, and exposes `part`s for deep styling
 (`cyber-modal::part(dialog) { … }`).
@@ -128,7 +128,7 @@ Stacked expandable sections.
 Fixed toast stack plus an imperative API.
 
 ```js
-import { toast } from "cyber-ui";
+import { toast } from "@jgawlik/cyber-ui";
 toast("Jump complete");
 toast("Hull integrity critical", {
   title: "Alert",

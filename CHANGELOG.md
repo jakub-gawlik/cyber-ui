@@ -8,7 +8,8 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ## [0.1.0] - 2026-10-07
 
-Initial release.
+Initial release, published to npm as `@jgawlik/cyber-ui` (the unscoped name
+`cyber-ui` is blocked by npm's similar-name rule against `cyber_ui`).
 
 ### Added
 
