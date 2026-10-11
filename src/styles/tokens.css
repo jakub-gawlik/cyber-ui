@@ -44,7 +44,7 @@
   --cyber-clip: 12px; /* corner-cut size for the angular frame look */
   --cyber-border-width: 1px;
 
-  /* -- typography (webfonts are the consumer's choice; demo loads
+  /* -- typography (webfonts are the consumer's choice; stacks expect
         Orbitron / Rajdhani / Share Tech Mono) ----------------------------- */
   --cyber-font-display: "Orbitron", "Rajdhani", "Segoe UI", system-ui, sans-serif;
   --cyber-font-body: "Rajdhani", "Segoe UI", system-ui, sans-serif;

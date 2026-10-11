@@ -5,8 +5,6 @@ import { resolve } from 'node:path';
 const root = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  // Dev server serves the demo; `vite build` ignores root and builds the lib entry.
-  root: resolve(root, 'demo'),
   publicDir: false,
   build: {
     outDir: resolve(root, 'dist'),

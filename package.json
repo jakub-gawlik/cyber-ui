@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/jakub-gawlik/cyber-ui.git"
   },
-  "homepage": "https://github.com/jakub-gawlik/cyber-ui#readme",
+  "homepage": "https://cyberui.art",
   "bugs": "https://github.com/jakub-gawlik/cyber-ui/issues",
   "keywords": [
     "cyberpunk",
@@ -45,14 +45,11 @@
     "**/*.css"
   ],
   "scripts": {
-    "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
-    "build:demo": "vite build --config vite.demo.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "pack:smoke": "npm pack --pack-destination smoke && mv smoke/jgawlik-cyber-ui-*.tgz smoke/cyber-ui.tgz",
-    "preview": "vite preview",
     "prepack": "npm run build",
     "prepublishOnly": "npm run typecheck && npm run test"
   },

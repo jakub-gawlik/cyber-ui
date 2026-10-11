@@ -6,6 +6,20 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ## [Unreleased]
 
+### Removed
+
+- The in-repo demo site (`demo/`, `vite.demo.config.ts`) and the `dev`,
+  `build:demo` and `preview` scripts — the library is now showcased and
+  documented on a separate website.
+- User-facing documentation (`docs/getting-started.md`, `theming.md`,
+  `css-components.md`, `web-components.md`, `effects.md`, `docs/README.md`)
+  and the README's usage sections — it now lives on https://cyberui.art.
+  The repo keeps developer docs only (`docs/architecture.md`).
+
+### Changed
+
+- `package.json` `homepage` now points to https://cyberui.art.
+
 ## [0.1.0] - 2026-10-07
 
 Initial release, published to npm as `@jgawlik/cyber-ui` (the unscoped name

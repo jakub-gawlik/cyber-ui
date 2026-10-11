@@ -14,13 +14,10 @@ src/
     base.css                  # opt-in typography/page helpers (no resets)
     effects.css               # .cyber-fx-* decorative classes
     components/*.css          # one file per component, class-based selectors only
-demo/                         # Vite demo site (dev playground; deployed to the dedicated demo website)
-  index.html, main.js         # bundled demo (npm run dev)
-  standalone.html             # no-bundler smoke test of the built dist/
 smoke/
   react/, vue/                # framework integration smoke apps (consume smoke/cyber-ui.tgz)
 tests/                        # Vitest browser-mode tests (one file per interactive component)
-docs/                         # this documentation
+docs/                         # developer documentation (user docs live on https://cyberui.art)
 dist/                         # build output (gitignored; produced by prepack / npm run build)
 .github/workflows/
   ci.yml                      # typecheck + build + tests + smoke-app builds on push/PR
@@ -51,9 +48,15 @@ Consequences to respect when editing:
   except via `::slotted()` — that's why `cyber-card` and `cyber-dropdown` carry
   small mirrors of `.cyber-link` / `.cyber-menu__item`. If you change those
   skins in CSS, update the mirrors.
-- Derived tokens are re-declared on every `[data-cyber-theme]` scope and inside
-  color variants — see [Theming → derived tokens](theming.md#derived-tokens) for
-  why.
+- Derived tokens (`--cyber-border`, `--cyber-glow`, `--cyber-scrim`, … —
+  `color-mix()` over the base colors) are re-declared on `:root`, on every
+  `[data-cyber-theme]` scope and inside color variants (`.cyber-btn--danger`,
+  …). CSS resolves `var()` inside a custom property where the property is
+  _defined_, not where it's used, so without the re-declaration a scoped theme
+  would inherit stale `:root` borders/glows. Keep this pattern when adding
+  tokens or variants.
+- The `:root` defaults in `tokens.css` and the `netrunner` block in
+  `themes.css` must stay identical.
 
 ## Elements
 
@@ -76,14 +79,11 @@ All elements are Lit 3, defined with `@customElement`, exported from
 
 | Script               | What it does                                                                                                    |
 | -------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`        | Vite dev server, demo at `localhost:5173` (`demo/index.html`)                                                   |
 | `npm run build`      | Library build: `dist/cyber-ui.js` + `dist/cyber-ui.css` (vite) + `dist/**/*.d.ts` (tsc `--emitDeclarationOnly`) |
-| `npm run build:demo` | Demo site build to `demo-dist/` (`vite.demo.config.ts`, relative base) — deploy to the demo website             |
 | `npm run typecheck`  | `tsc --noEmit -p tsconfig.test.json` (covers `src/`, `tests/` and the config files)                             |
 | `npm run test`       | Browser test suite: Vitest browser mode in headless Chromium (`vitest.config.ts`, `tests/`)                     |
 | `npm run test:watch` | Same suite, watch mode                                                                                          |
 | `npm run pack:smoke` | `npm pack` the library into `smoke/cyber-ui.tgz` (what the smoke apps install)                                  |
-| `npm run preview`    | Preview the built demo                                                                                          |
 
 Package exports: `.` → `dist/cyber-ui.js` (+ types), `./styles.css` →
 `dist/cyber-ui.css`. Lifecycle hooks: `prepack` runs the library build (so any
@@ -105,24 +105,16 @@ events, keyboard navigation, and open/close state transitions are the contract.
 ## Verification
 
 - **Tests** (`npm run test`): behavioral contract of the interactive elements.
-- **Demo** (`demo/`): every component and theme should be represented; it's the
-  visual regression surface.
-- **`demo/standalone.html`**: loads the built `dist/` directly with no bundler —
-  run a static server from the repo root after `npm run build`. Catches
-  bundling/registration regressions.
 - **Smoke apps** (`smoke/react`, `smoke/vue`): install `smoke/cyber-ui.tgz`
   (regenerate with `npm run pack:smoke`) to verify real-world install,
   custom-element events and framework config.
 
-## CI / deployment
+## CI
 
 - `.github/workflows/ci.yml`: on every push to `main` and every PR —
   typecheck, library build, browser tests, and a matrix job that packs the
   library and builds both smoke apps against the tarball (catches packaging
   regressions: exports map, `sideEffects`, missing files).
-- Demo deployment is external: `npm run build:demo` produces `demo-dist/`
-  (static, relative base so it works at any path), which is published to the
-  dedicated demo website outside this repo.
 
 ## Releasing
 
