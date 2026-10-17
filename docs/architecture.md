@@ -354,6 +354,11 @@ One-time setup on npmjs.com (package `@jgawlik/cyber-ui` → Settings →
 Trusted Publisher): register **GitHub Actions** with this repository and
 workflow filename `release.yml`. That lets CI publish via OIDC — no npm token
 stored in the repo, and local 2FA stays enforced for everything else.
+Trusted publishing needs npm >= 11.5.1, so the release job upgrades the npm
+that Node 22 bundles (10.x). An older npm doesn't fail clearly: it falls back
+to token auth, finds no token, and the publish gets `E404 Not Found`. A
+trusted-publisher setting that doesn't match the repository / workflow
+filename produces the same 404.
 (Fallback if trusted publishing isn't configured: add an npm _automation_
 granular token as the `NODE_AUTH_TOKEN` secret and pass it to the publish
 step.)
