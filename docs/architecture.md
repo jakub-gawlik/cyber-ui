@@ -28,7 +28,6 @@ custom-elements-manifest.config.mjs  # manifest + VS Code / JetBrains / React / 
 eslint.config.js, .prettierrc.json, .size-limit.json  # lint, format, bundle budgets
 .github/workflows/
   ci.yml                      # lint, format, typecheck, build, dist types, size, tests, smoke builds on push/PR
-  release.yml                 # tag-driven npm publish + GitHub release (the only publish path)
 ```
 
 ## One stylesheet, two consumers
@@ -328,40 +327,37 @@ events, keyboard navigation, and open/close state transitions are the contract.
 
 - `.github/workflows/ci.yml`: on every push to `main` and every PR —
   lint, format check, typecheck, library build, dist type tests, size
-  budgets, browser tests (installs Chromium, Firefox and WebKit;
-  `release.yml` does the same for its gate), and a matrix job that packs the
+  budgets, browser tests (installs Chromium, Firefox and WebKit), and a
+  matrix job that packs the
   library and builds both smoke apps against the tarball (catches packaging
   regressions: exports map, `sideEffects`, missing files).
 
 ## Releasing
 
-Releases are **controlled and tag-driven**: nothing is ever published from a
-local machine. Pushing a `v*` tag triggers `.github/workflows/release.yml`,
-which verifies the tag matches `package.json`, verifies `CHANGELOG.md` has a
-section for the version, runs the full gates (typecheck + browser tests via
-`prepublishOnly`, build via `prepack`), publishes to npm, and creates a GitHub
-release.
+Releases are published **manually by the maintainer** from a local machine.
+There is no release workflow: npm trusted publishing from CI never worked for
+this package (every attempt got `E404`), so it was removed. CI still gates
+`main`.
 
 Procedure for a release:
 
-1. Promote the `Unreleased` notes in `CHANGELOG.md` to a new
-   `## [<version>] - <date>` section and commit that.
-2. `npm version patch|minor|major` — bumps `package.json`, commits, and
-   creates the `v<version>` tag in one step (requires a clean tree).
-3. `git push && git push --tags` — the tag push starts the release workflow.
+1. Make sure `main` is green in CI and the working tree is clean.
+2. Promote the `Unreleased` notes in `CHANGELOG.md` to a new
+   `## [<version>] - <date>` section and set the version in `package.json`
+   and `package-lock.json` (`npm version <version> --no-git-tag-version`
+   updates both). Commit that.
+3. Run the gates CI doesn't run at publish time: `npm run lint`,
+   `npm run format:check`, `npm run build`, `npm run typecheck:dist`,
+   `npm run size`. Optionally preview the tarball with `npm pack --dry-run`.
+4. `npm whoami` must print `jgawlik`; otherwise `npm login`. A publish
+   without a valid session fails with `E404 Not Found`, because npm doesn't
+   confirm that the package exists to anyone not allowed to write to it.
+5. `npm publish`. `prepublishOnly` runs typecheck + the browser tests and
+   `prepack` builds a fresh `dist/`. With 2FA, npm asks for a one-time code
+   (or pass `--otp=<code>`).
+6. Tag the published commit and push: `git tag v<version>`, then
+   `git push && git push origin v<version>`. Optionally create a GitHub
+   release for the tag.
 
-One-time setup on npmjs.com (package `@jgawlik/cyber-ui` → Settings →
-Trusted Publisher): register **GitHub Actions** with this repository and
-workflow filename `release.yml`. That lets CI publish via OIDC — no npm token
-stored in the repo, and local 2FA stays enforced for everything else.
-Trusted publishing needs npm >= 11.5.1, so the release job upgrades the npm
-that Node 22 bundles (10.x). An older npm doesn't fail clearly: it falls back
-to token auth, finds no token, and the publish gets `E404 Not Found`. A
-trusted-publisher setting that doesn't match the repository / workflow
-filename produces the same 404.
-(Fallback if trusted publishing isn't configured: add an npm _automation_
-granular token as the `NODE_AUTH_TOKEN` secret and pass it to the publish
-step.)
-
-Released so far: `v0.1.0` (2026-10-07), the initial publish — done manually
-before this pipeline existed; every later release goes through the workflow.
+Released so far: `v0.1.0` (2026-10-07). `0.0.0-stage` on the registry is an
+earlier manual test publish from the same day.
