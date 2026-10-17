@@ -1,3 +1,5 @@
+import axe from 'axe-core';
+import { expect } from 'vitest';
 import '../src/index.js';
 
 const containers: HTMLElement[] = [];
@@ -27,8 +29,33 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function keydown(target: EventTarget, key: string) {
-  target.dispatchEvent(
-    new KeyboardEvent('keydown', { key, bubbles: true, composed: true }),
+/** Dispatch a cancelable keydown; returns it so callers can check defaultPrevented. */
+export function keydown(target: EventTarget, key: string): KeyboardEvent {
+  const event = new KeyboardEvent('keydown', {
+    key,
+    bubbles: true,
+    composed: true,
+    cancelable: true,
+  });
+  target.dispatchEvent(event);
+  return event;
+}
+
+/**
+ * Assert axe-core finds no WCAG 2.x A/AA violations in `context` (shadow
+ * roots included). color-contrast is off: tests render without a themed
+ * page background, so contrast results would be meaningless here.
+ */
+export async function expectAccessible(context: Element = document.body) {
+  const results = await axe.run(context, {
+    runOnly: {
+      type: 'tag',
+      values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'],
+    },
+    rules: { 'color-contrast': { enabled: false } },
+  });
+  const summary = results.violations.map(
+    (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(', ')})`,
   );
+  expect(summary).toEqual([]);
 }

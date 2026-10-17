@@ -2,6 +2,11 @@
    .cyber-toast — notification card. Used by <cyber-toaster> (shadow DOM)
    and usable standalone for static alert banners.
    Variants: --success, --warning, --danger (default: info/primary).
+
+   Markup: .cyber-toast > .cyber-toast__body (> .cyber-toast__title,
+           .cyber-toast__message, optional .cyber-toast__action button)
+           + .cyber-toast__close button.
+   Use role="alert" for --danger / --warning and role="status" otherwise.
    ========================================================================== */
 
 .cyber-toast {
@@ -68,6 +73,27 @@
 .cyber-toast__close:focus-visible {
   color: var(--cyber-primary);
   text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+/* small text button under the message, e.g. "Undo" */
+.cyber-toast__action {
+  all: unset;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.3em;
+  font-family: var(--cyber-font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cyber-primary);
+  border-bottom: 1px solid transparent;
+  transition: text-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.cyber-toast__action:hover,
+.cyber-toast__action:focus-visible {
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+  border-bottom-color: var(--cyber-primary);
 }
 
 /* -- variants ----------------------------------------------------------------

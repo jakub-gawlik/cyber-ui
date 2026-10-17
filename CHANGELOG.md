@@ -6,6 +6,51 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `<cyber-dropdown>`: typeahead — typing jumps to the next menu item whose
+  text starts with the typed characters (repeat a character to cycle).
+- `<cyber-tabs>`: `orientation="vertical"` (stacked tab strip, ArrowUp /
+  ArrowDown navigation, `aria-orientation`) and `activation="manual"`
+  (arrows move focus only; Enter / Space selects). New
+  `.cyber-tabs--vertical` modifier in the CSS core.
+- `toast()`: optional `action` button (`{ label, onClick }`, e.g. "Undo";
+  clicking dismisses the toast), styled by the new `.cyber-toast__action`.
+- `<cyber-toaster>`: `cyber-toast-dismiss` event with `{ id, reason }`
+  (`timeout`, `close`, `action` or `api`); `dismiss(id, reason?)`.
+- `<cyber-modal>`: `cyber-open` event; `returnValue` property,
+  `close(returnValue?)`, and `cyber-close` detail `{ returnValue }`. A
+  slotted `<form method="dialog">` (or a `formmethod="dialog"` button) now
+  closes the modal with the submit button's value.
+- Exported types `TabsOrientation`, `TabsActivation`, `ToastAction`,
+  `ToastDismissReason`.
+
+### Changed
+
+- `<cyber-dropdown>`: `aria-haspopup="menu"` and a live `aria-expanded` are
+  now set on the slotted trigger element (they were on the internal
+  `<slot>`, where assistive tech ignores them). Escape and item selection
+  return focus to the trigger.
+- Escape dismissal is scoped: an open dropdown closes only when the Escape
+  comes from inside it (or focus is inside it), or when it is the top-most
+  open overlay; one Escape closes one layer. The handled event is
+  `preventDefault()`ed and is no longer stopped from propagating, so other
+  page Escape handlers keep working.
+- `<cyber-tabs>`: tabs and panels are wired with generated ids,
+  `aria-controls` and `aria-labelledby`. The `role="tabpanel"` region (with
+  `tabindex="0"`) is now a shadow wrapper around each `<cyber-tab-panel>`,
+  which no longer carries `role`, `tabindex` or `aria-label` itself. New
+  `panel` and `base` parts. Out-of-range `selected` values are clamped;
+  panels added or removed later are picked up, and label changes update
+  the tab text.
+- Toasts with `variant: 'danger'` or `'warning'` use `role="alert"`
+  (assertive); others keep `role="status"`.
+
+### Fixed
+
+- JSDoc import examples now use the published package name
+  `@jgawlik/cyber-ui`.
+
 ### Removed
 
 - The in-repo demo site (`demo/`, `vite.demo.config.ts`) and the `dev`,

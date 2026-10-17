@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CyberCard } from '../src/index.js';
-import { cleanupFixtures, fixture } from './helpers.js';
+import { cleanupFixtures, expectAccessible, fixture } from './helpers.js';
 
 const section = (card: CyberCard, part: string) =>
   card.shadowRoot!.querySelector(`[part="${part}"]`) as HTMLElement;
@@ -42,5 +42,18 @@ describe('<cyber-card>', () => {
     link.textContent = 'Details';
     card.append(link);
     await vi.waitFor(() => expect(section(card, 'footer').hidden).toBe(false));
+  });
+
+  it('has no axe violations', async () => {
+    const card = fixture<CyberCard>(`
+      <cyber-card>
+        <img slot="media" alt="Nebula" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" />
+        <span slot="title">Signal Lost</span>
+        <p>Long-range sensors report an anomaly.</p>
+        <a slot="footer" href="#details">Details</a>
+      </cyber-card>
+    `);
+    await vi.waitFor(() => expect(section(card, 'footer').hidden).toBe(false));
+    await expectAccessible(card);
   });
 });

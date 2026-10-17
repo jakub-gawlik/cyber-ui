@@ -8,7 +8,15 @@ import modalStyles from '../styles/components/modal.css?inline';
  * trap and Escape handling come from the platform).
  *
  * Open declaratively (`open` attribute / property) or imperatively with
- * `show()` / `close()`. Emits `cyber-close` when dismissed.
+ * `show()` / `close()`. Emits `cyber-open` whenever it opens and
+ * `cyber-close` (detail: { returnValue }) whenever it closes, by any path.
+ *
+ * Return value: mirrors native `<dialog>.returnValue`. Set it with
+ * `close(value)` or by submitting a slotted `<form method="dialog">` — the
+ * submit button's `value` becomes the return value (a light-DOM form can't
+ * reach the shadow <dialog> natively, so the element handles it). Read it
+ * from `modal.returnValue` or the `cyber-close` detail. It resets to `''`
+ * each time the modal opens, so Escape / backdrop / ✕ report `''`.
  *
  * Slots: `title`, default (body), `footer` (actions).
  * Parts: dialog, header, body, footer, close-button.
@@ -17,8 +25,14 @@ import modalStyles from '../styles/components/modal.css?inline';
  * <cyber-modal id="alert">
  *   <span slot="title">Incoming Transmission</span>
  *   <p>Hostile fleet detected on the outer rim.</p>
- *   <button slot="footer" class="cyber-btn cyber-btn--primary">Engage</button>
+ *   <form slot="footer" method="dialog">
+ *     <button value="retreat" class="cyber-btn">Retreat</button>
+ *     <button value="engage" class="cyber-btn cyber-btn--primary">Engage</button>
+ *   </form>
  * </cyber-modal>
+ * <script>
+ *   alert.addEventListener('cyber-close', (e) => console.log(e.detail.returnValue));
+ * </script>
  */
 @customElement('cyber-modal')
 export class CyberModal extends LitElement {
@@ -49,18 +63,43 @@ export class CyberModal extends LitElement {
 
   @query('dialog') private dialog!: HTMLDialogElement;
 
+  /** The dialog's return value (see the class docs). */
+  get returnValue(): string {
+    return this.dialog?.returnValue ?? '';
+  }
+
+  set returnValue(value: string) {
+    if (this.dialog) this.dialog.returnValue = value;
+  }
+
   show() {
     this.open = true;
   }
 
-  close() {
+  /** Close the dialog, optionally setting its `returnValue`. */
+  close(returnValue?: string) {
+    if (returnValue !== undefined) this.returnValue = returnValue;
     this.open = false;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('submit', this.onSubmit);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('submit', this.onSubmit);
   }
 
   protected updated(changed: PropertyValues<this>) {
     if (changed.has('open')) {
       if (this.open && !this.dialog.open) {
+        this.dialog.returnValue = '';
         this.dialog.showModal();
+        this.dispatchEvent(
+          new CustomEvent('cyber-open', { bubbles: true, composed: true }),
+        );
       } else if (!this.open && this.dialog.open) {
         this.dialog.close();
       }
@@ -73,8 +112,25 @@ export class CyberModal extends LitElement {
   private onNativeClose = () => {
     this.open = false;
     this.dispatchEvent(
-      new CustomEvent('cyber-close', { bubbles: true, composed: true }),
+      new CustomEvent('cyber-close', {
+        detail: { returnValue: this.dialog.returnValue },
+        bubbles: true,
+        composed: true,
+      }),
     );
+  };
+
+  /** Slotted `<form method="dialog">` (or a `formmethod="dialog"`
+      submitter): its nearest <dialog> ancestor is not ours across the
+      shadow boundary, so do the dialog submission here. */
+  private onSubmit = (event: SubmitEvent) => {
+    const submitter = event.submitter as HTMLButtonElement | HTMLInputElement | null;
+    const method =
+      submitter?.getAttribute('formmethod') ??
+      (event.target as HTMLFormElement).getAttribute('method');
+    if (method?.toLowerCase() !== 'dialog') return;
+    event.preventDefault();
+    this.close(submitter?.value ?? '');
   };
 
   private onCancel = (event: Event) => {
@@ -106,7 +162,7 @@ export class CyberModal extends LitElement {
             class="cyber-modal__close"
             part="close-button"
             aria-label="Close"
-            @click=${this.close}
+            @click=${() => this.close()}
           >
             &#x2715;
           </button>

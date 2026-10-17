@@ -1,14 +1,21 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { LitElement, html, css, unsafeCSS, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { DismissController } from './internal/dismiss.js';
 import dropdownStyles from '../styles/components/dropdown.css?inline';
 
 /**
  * <cyber-dropdown> — trigger + anchored menu. Closes on Escape, outside
- * click, or item selection. Arrow keys move focus through the items.
- * Flips above the trigger when there is no room below.
+ * click, or item selection; Escape and selection return focus to the
+ * trigger. Arrow keys / Home / End move focus through the items, and typing
+ * jumps to the next item whose text starts with the typed characters
+ * (typeahead). Flips above the trigger when there is no room below.
  *
- * Slots: `trigger` (a button), default (menu items — give them
+ * Escape is scoped: it closes this menu only when the key event comes from
+ * inside it (or focus is inside it), or when it is the top-most open
+ * overlay — so nested / stacked overlays close one layer at a time.
+ *
+ * Slots: `trigger` (a button — it receives `aria-haspopup="menu"` and a
+ * live `aria-expanded`), default (menu items — give them
  * `role="menuitem"`; `.cyber-menu__item` from the global stylesheet or the
  * built-in slotted styling provides the skin).
  * Events: `cyber-open`, `cyber-close`, `cyber-select` (detail: { item }).
@@ -84,11 +91,17 @@ export class CyberDropdown extends LitElement {
 
   @query('.cyber-dropdown__menu') private menu!: HTMLElement;
 
+  private trigger: HTMLElement | null = null;
+
+  /** typeahead buffer, cleared after a pause in typing */
+  private typed = '';
+  private typedTimer = 0;
+
   constructor() {
     super();
     new DismissController(this, {
       isOpen: () => this.open,
-      dismiss: () => this.hide(),
+      dismiss: (reason) => this.hide(true, reason === 'escape'),
     });
   }
 
@@ -111,10 +124,36 @@ export class CyberDropdown extends LitElement {
     });
   }
 
-  hide(emit = true) {
+  hide(emit = true, restoreFocus = false) {
     if (!this.open) return;
     this.open = false;
     if (emit) this.emit('cyber-close');
+    if (restoreFocus) this.trigger?.focus();
+  }
+
+  protected updated(changed: PropertyValues<this>) {
+    if (changed.has('open')) this.syncTrigger();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.clearTimeout(this.typedTimer);
+  }
+
+  private syncTrigger() {
+    this.trigger?.setAttribute('aria-haspopup', 'menu');
+    this.trigger?.setAttribute('aria-expanded', String(this.open));
+  }
+
+  private onTriggerSlotChange(event: Event) {
+    const slot = event.target as HTMLSlotElement;
+    const trigger =
+      slot.assignedElements().find((el) => el instanceof HTMLElement) ?? null;
+    if (trigger === this.trigger) return;
+    this.trigger?.removeAttribute('aria-haspopup');
+    this.trigger?.removeAttribute('aria-expanded');
+    this.trigger = trigger as HTMLElement | null;
+    this.syncTrigger();
   }
 
   private emit(name: string, detail?: unknown) {
@@ -139,7 +178,7 @@ export class CyberDropdown extends LitElement {
     const item = (event.target as HTMLElement).closest('[role="menuitem"]');
     if (item) {
       this.emit('cyber-select', { item });
-      this.hide();
+      this.hide(true, true);
     }
   };
 
@@ -163,6 +202,8 @@ export class CyberDropdown extends LitElement {
       case 'Tab':
         this.hide();
         break;
+      default:
+        next = this.typeahead(event, items, current);
     }
     if (next !== null) {
       event.preventDefault();
@@ -170,12 +211,41 @@ export class CyberDropdown extends LitElement {
     }
   };
 
+  /** Index of the item matching the typed prefix, or null. */
+  private typeahead(
+    event: KeyboardEvent,
+    items: HTMLElement[],
+    current: number,
+  ): number | null {
+    const { key } = event;
+    if (key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) {
+      return null;
+    }
+    // a leading space activates the focused item; don't swallow it
+    if (key === ' ' && !this.typed) return null;
+    this.typed += key.toLowerCase();
+    window.clearTimeout(this.typedTimer);
+    this.typedTimer = window.setTimeout(() => (this.typed = ''), 500);
+
+    // repeating one character cycles through items starting with it;
+    // otherwise keep matching the whole prefix from the current item
+    const repeated = [...this.typed].every((c) => c === this.typed[0]);
+    const prefix = repeated ? this.typed[0] : this.typed;
+    const start = repeated ? current + 1 : Math.max(current, 0);
+    for (let i = 0; i < items.length; i++) {
+      const index = (start + i) % items.length;
+      const text = items[index].textContent?.trim().toLowerCase() ?? '';
+      if (text.startsWith(prefix)) return index;
+    }
+    return null;
+  }
+
   render() {
     return html`
       <slot
         name="trigger"
         @click=${this.onTriggerClick}
-        aria-haspopup="menu"
+        @slotchange=${this.onTriggerSlotChange}
       ></slot>
       <div
         class="cyber-dropdown__menu cyber-menu"

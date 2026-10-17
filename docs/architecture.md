@@ -73,7 +73,20 @@ All elements are Lit 3, defined with `@customElement`, exported from
   sections.
 - Add the tag to `HTMLElementTagNameMap` in a `declare global` block.
 - Shared behavior lives in `src/components/internal/` (`DismissController` =
-  Escape + outside-click dismissal).
+  Escape + outside-click dismissal). Escape is scoped: one shared document
+  listener picks a single open overlay per key press — the one the event
+  path is inside, else the one holding focus, else the top-most (most
+  recently opened) — and `preventDefault()`s the event instead of stopping
+  propagation, so a surrounding `<dialog>` doesn't also close. Open state is
+  sampled in `hostUpdated`, so hosts need no extra wiring.
+- ARIA id references can't cross a shadow boundary. When an element needs
+  `aria-controls` / `aria-labelledby` between generated controls and
+  slotted content, both ends live in the shadow root: `<cyber-tabs>` wraps
+  each slotted panel in a shadow `role="tabpanel"` region via manual slot
+  assignment (`slotAssignment: 'manual'` + `slot.assign()`, children
+  tracked with a `MutationObserver`), leaving the consumer's DOM untouched.
+  Attributes on the consumer's own slotted element (the dropdown trigger's
+  `aria-haspopup`/`aria-expanded`) are set on `slotchange`.
 
 ## Build & scripts
 
@@ -81,7 +94,7 @@ All elements are Lit 3, defined with `@customElement`, exported from
 | -------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `npm run build`      | Library build: `dist/cyber-ui.js` + `dist/cyber-ui.css` (vite) + `dist/**/*.d.ts` (tsc `--emitDeclarationOnly`) |
 | `npm run typecheck`  | `tsc --noEmit -p tsconfig.test.json` (covers `src/`, `tests/` and the config files)                             |
-| `npm run test`       | Browser test suite: Vitest browser mode in headless Chromium (`vitest.config.ts`, `tests/`)                     |
+| `npm run test`       | Browser test suite: Vitest browser mode in headless Chromium, Firefox and WebKit (`vitest.config.ts`, `tests/`) |
 | `npm run test:watch` | Same suite, watch mode                                                                                          |
 | `npm run pack:smoke` | `npm pack` the library into `smoke/cyber-ui.tgz` (what the smoke apps install)                                  |
 
@@ -92,19 +105,34 @@ typecheck + tests as a publish gate.
 
 ## Tests
 
-`tests/*.test.ts` run with Vitest **browser mode** in real headless Chromium
-(Playwright provider) — the components depend on platform behavior (native
+`tests/*.test.ts` run with Vitest **browser mode** in real headless
+Chromium, Firefox and WebKit (Playwright provider, one `instances` entry
+each) — the components depend on platform behavior (native
 `<dialog>.showModal`, shadow-DOM slot assignment, focus management) that DOM
-emulators don't implement faithfully. One file per interactive component plus
-`helpers.ts` (fixture mount/cleanup, event capture, synthetic keydown). First
-run locally needs `npx playwright install chromium`.
+emulators don't implement faithfully and that differs between engines. Run a
+single engine with `npx vitest run --project <chromium|firefox|webkit>`. One
+file per component plus `helpers.ts` (fixture mount/cleanup, event capture,
+cancelable synthetic keydown, `expectAccessible()`). First run locally needs
+`npx playwright install chromium firefox webkit`. On macOS the Firefox
+instance launches with `CFFIXED_USER_HOME` set to a fresh per-run temp dir:
+macOS 27 protects the Firefox app-data folder Playwright's Firefox shares,
+which otherwise makes it quit with "Could not find profile folder"
+(microsoft/playwright#42768). Drop the workaround once Playwright fixes it.
+
+Every test file includes an accessibility check: `expectAccessible(el)` runs
+axe-core (dev dependency) over the element, shadow roots included, limited to
+the WCAG 2.x A/AA rule tags and with `color-contrast` disabled (tests render
+without a themed page background). Real key presses that must trigger
+native activation (Enter/Space on a button) use `userEvent` from
+`vitest/browser`; everything else uses the synthetic `keydown` helper.
 
 When changing an element's behavior, extend its test file in the same change —
 events, keyboard navigation, and open/close state transitions are the contract.
 
 ## Verification
 
-- **Tests** (`npm run test`): behavioral contract of the interactive elements.
+- **Tests** (`npm run test`): behavioral contract of the interactive elements
+  plus axe-core checks, in all three engines.
 - **Smoke apps** (`smoke/react`, `smoke/vue`): install `smoke/cyber-ui.tgz`
   (regenerate with `npm run pack:smoke`) to verify real-world install,
   custom-element events and framework config.
@@ -112,7 +140,8 @@ events, keyboard navigation, and open/close state transitions are the contract.
 ## CI
 
 - `.github/workflows/ci.yml`: on every push to `main` and every PR —
-  typecheck, library build, browser tests, and a matrix job that packs the
+  typecheck, library build, browser tests (installs Chromium, Firefox and
+  WebKit; `release.yml` does the same for its gate), and a matrix job that packs the
   library and builds both smoke apps against the tarball (catches packaging
   regressions: exports map, `sideEffects`, missing files).
 

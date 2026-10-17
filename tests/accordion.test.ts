@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import type { CyberAccordion, CyberAccordionItem } from '../src/index.js';
-import { captureEvents, cleanupFixtures, fixture } from './helpers.js';
+import { captureEvents, cleanupFixtures, expectAccessible, fixture } from './helpers.js';
 
 const itemsOf = (acc: CyberAccordion) =>
   [...acc.querySelectorAll<CyberAccordionItem>('cyber-accordion-item')];
@@ -67,5 +67,17 @@ describe('<cyber-accordion>', () => {
     triggerOf(b).click();
     await b.updateComplete;
     expect([a.open, b.open, c.open]).toEqual([false, false, false]);
+  });
+
+  it('has no axe violations, collapsed or expanded', async () => {
+    const acc = fixture<CyberAccordion>(`
+      <cyber-accordion>
+        <cyber-accordion-item heading="Propulsion"><p>FTL</p></cyber-accordion-item>
+        <cyber-accordion-item heading="Weapons" open><p>Lasers</p></cyber-accordion-item>
+      </cyber-accordion>
+    `);
+    const items = itemsOf(acc);
+    await Promise.all(items.map((i) => i.updateComplete));
+    await expectAccessible(acc);
   });
 });
