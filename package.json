@@ -31,24 +31,93 @@
   "main": "./dist/cyber-ui.js",
   "module": "./dist/cyber-ui.js",
   "types": "./dist/index.d.ts",
+  "customElements": "dist/custom-elements.json",
+  "web-types": "./dist/web-types.json",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/cyber-ui.js"
     },
-    "./styles.css": "./dist/cyber-ui.css"
+    "./accordion": {
+      "types": "./dist/components/cyber-accordion.d.ts",
+      "import": "./dist/components/cyber-accordion.js"
+    },
+    "./card": {
+      "types": "./dist/components/cyber-card.d.ts",
+      "import": "./dist/components/cyber-card.js"
+    },
+    "./dropdown": {
+      "types": "./dist/components/cyber-dropdown.d.ts",
+      "import": "./dist/components/cyber-dropdown.js"
+    },
+    "./modal": {
+      "types": "./dist/components/cyber-modal.d.ts",
+      "import": "./dist/components/cyber-modal.js"
+    },
+    "./tabs": {
+      "types": "./dist/components/cyber-tabs.d.ts",
+      "import": "./dist/components/cyber-tabs.js"
+    },
+    "./toast": {
+      "types": "./dist/components/cyber-toast.d.ts",
+      "import": "./dist/components/cyber-toast.js"
+    },
+    "./checkbox": {
+      "types": "./dist/components/cyber-checkbox.d.ts",
+      "import": "./dist/components/cyber-checkbox.js"
+    },
+    "./input": {
+      "types": "./dist/components/cyber-input.d.ts",
+      "import": "./dist/components/cyber-input.js"
+    },
+    "./radio-group": {
+      "types": "./dist/components/cyber-radio-group.d.ts",
+      "import": "./dist/components/cyber-radio-group.js"
+    },
+    "./select": {
+      "types": "./dist/components/cyber-select.d.ts",
+      "import": "./dist/components/cyber-select.js"
+    },
+    "./slider": {
+      "types": "./dist/components/cyber-slider.d.ts",
+      "import": "./dist/components/cyber-slider.js"
+    },
+    "./switch": {
+      "types": "./dist/components/cyber-switch.d.ts",
+      "import": "./dist/components/cyber-switch.js"
+    },
+    "./textarea": {
+      "types": "./dist/components/cyber-textarea.d.ts",
+      "import": "./dist/components/cyber-textarea.js"
+    },
+    "./react": {
+      "types": "./dist/types/react.d.ts"
+    },
+    "./vue": {
+      "types": "./dist/types/vue.d.ts"
+    },
+    "./styles.css": "./dist/cyber-ui.css",
+    "./styles/*.css": "./dist/styles/*.css",
+    "./custom-elements.json": "./dist/custom-elements.json",
+    "./package.json": "./package.json"
   },
   "sideEffects": [
     "./dist/cyber-ui.js",
+    "./dist/components/*.js",
     "./src/index.ts",
     "./src/components/*.ts",
     "**/*.css"
   ],
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly",
+    "build": "vite build && tsc --emitDeclarationOnly && cem analyze",
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "typecheck:dist": "tsc -p tests/types/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "size": "size-limit",
     "pack:smoke": "npm pack --pack-destination smoke && mv smoke/jgawlik-cyber-ui-*.tgz smoke/cyber-ui.tgz",
     "prepack": "npm run build",
     "prepublishOnly": "npm run typecheck && npm run test"
@@ -57,10 +126,25 @@
     "lit": "^3.2.0"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@eslint/js": "^10.0.1",
+    "@size-limit/preset-small-lib": "^14.2.0",
     "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
     "@vitest/browser-playwright": "^5.0.3",
+    "axe-core": "^4.14.0",
+    "custom-element-jet-brains-integration": "^1.8.0",
+    "custom-element-vs-code-integration": "^1.5.0",
+    "eslint": "^10.13.0",
+    "eslint-plugin-lit": "^2.3.1",
+    "eslint-plugin-wc": "^3.1.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "size-limit": "^14.2.0",
     "typescript": "~5.6.0",
+    "typescript-eslint": "^8.71.2",
     "vite": "^6.0.0",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "vue": "^3.5.44"
   }
 }

@@ -1,7 +1,19 @@
 /* ==========================================================================
    .cyber-input — text inputs & textareas. Styles the native element, so
    framework bindings (v-model, controlled inputs) work untouched.
-   .cyber-field — optional label + input stack.
+   Used by <cyber-input> / <cyber-textarea> (and the field shell of every
+   form element) internally.
+
+   .cyber-field — optional label + control + help-text stack:
+   <div class="cyber-field">
+     <label for="id">Callsign</label>          (or .cyber-field__label)
+     <input id="id" class="cyber-input">
+     <div class="cyber-field__help">Visible to allied fleets</div>
+   </div>
+   .cyber-field__head — optional row holding the label plus a trailing
+   readout (e.g. a slider value).
+   States: :user-invalid or aria-invalid="true" on .cyber-input → danger
+   border.
    ========================================================================== */
 
 .cyber-field {
@@ -10,11 +22,26 @@
   gap: var(--cyber-space-1);
 }
 
-.cyber-field > label {
+.cyber-field__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--cyber-space-2);
+}
+
+.cyber-field > label,
+.cyber-field__head > label,
+.cyber-field__label {
   font-family: var(--cyber-font-mono);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.22em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-field__help {
+  font-family: var(--cyber-font-body);
+  font-size: 0.82rem;
   color: var(--cyber-text-dim);
 }
 
@@ -31,7 +58,10 @@
   font-size: 0.9rem;
   letter-spacing: 0.04em;
   caret-color: var(--cyber-primary);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
 
 .cyber-input::placeholder {
@@ -50,7 +80,8 @@
   outline: none;
   border-color: var(--cyber-primary);
   background: var(--cyber-tint);
-  box-shadow: inset 0 0 12px color-mix(in srgb, var(--cyber-primary) 10%, transparent),
+  box-shadow:
+    inset 0 0 12px color-mix(in srgb, var(--cyber-primary) 10%, transparent),
     0 0 8px var(--cyber-glow-color);
 }
 
@@ -59,7 +90,8 @@
   cursor: not-allowed;
 }
 
-.cyber-input:user-invalid {
+.cyber-input:user-invalid,
+.cyber-input[aria-invalid="true"] {
   border-color: var(--cyber-danger);
   border-left-color: var(--cyber-danger);
 }

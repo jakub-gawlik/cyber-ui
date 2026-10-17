@@ -43,7 +43,7 @@ jobs:
             echo "CHANGELOG.md has no section for $TAG_VERSION" >&2
             exit 1
           }
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
       # prepublishOnly runs typecheck + tests, prepack builds dist/
       - run: npm publish
       - name: Create GitHub release

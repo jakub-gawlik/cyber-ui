@@ -1,6 +1,13 @@
 /* ==========================================================================
    .cyber-tabs — tab strip + panels. Used by <cyber-tabs> internally and
    usable class-only (consumer wires behavior, e.g. their framework router).
+
+   Markup: .cyber-tabs > .cyber-tabs__list[role=tablist] > .cyber-tab
+           (buttons; aria-selected="true" marks the active one)
+           + .cyber-tabs__panels > [role=tabpanel] panels.
+   Modifiers: .cyber-tabs--vertical — list stacked to the left of the
+   panels, active indicator on the list's right edge (pair it with
+   aria-orientation="vertical" on the tablist).
    ========================================================================== */
 
 .cyber-tabs__list {
@@ -27,7 +34,10 @@
   letter-spacing: 0.16em;
   color: var(--cyber-text-dim);
   cursor: pointer;
-  transition: color 0.15s ease, text-shadow 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    text-shadow 0.15s ease,
+    background 0.15s ease;
 }
 
 .cyber-tab:hover {
@@ -61,4 +71,42 @@
 
 .cyber-tab[aria-selected="true"]::after {
   transform: scaleX(1);
+}
+
+/* -- vertical --------------------------------------------------------------- */
+.cyber-tabs--vertical {
+  display: flex;
+  align-items: flex-start;
+}
+
+.cyber-tabs--vertical .cyber-tabs__list {
+  flex-direction: column;
+  flex: none;
+  border-bottom: 0;
+  border-right: var(--cyber-border-width) solid var(--cyber-border-dim);
+}
+
+.cyber-tabs--vertical .cyber-tabs__panels {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0;
+  padding-left: var(--cyber-space-3);
+}
+
+.cyber-tabs--vertical .cyber-tab {
+  text-align: left;
+}
+
+.cyber-tabs--vertical .cyber-tab::after {
+  left: auto;
+  top: 0;
+  bottom: 0;
+  right: calc(var(--cyber-border-width) * -1);
+  width: 2px;
+  height: auto;
+  transform: scaleY(0);
+}
+
+.cyber-tabs--vertical .cyber-tab[aria-selected="true"]::after {
+  transform: scaleY(1);
 }

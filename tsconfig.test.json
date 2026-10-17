@@ -4,5 +4,7 @@
     "noEmit": true,
     "types": ["vite/client", "vitest", "node"]
   },
-  "include": ["src", "tests", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "tests", "vite.config.ts", "vitest.config.ts"],
+  // type tests for the built package; run by `npm run typecheck:dist`
+  "exclude": ["tests/types"]
 }

@@ -15,7 +15,14 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  clip-path: polygon(
+    6px 0,
+    100% 0,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    0 100%,
+    0 6px
+  );
 }
 
 /* status dot */

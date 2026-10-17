@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { toast } from '@jgawlik/cyber-ui';
+import { toast } from '@jgawlik/cyber-ui/toast';
 
 const EVENTS = [
   {
@@ -19,6 +19,7 @@ export default function App() {
   const [closeCount, setCloseCount] = useState(0);
   const [callsign, setCallsign] = useState('ISS Aurora');
   const [hull, setHull] = useState(72);
+  const [submitted, setSubmitted] = useState('');
   const modalRef = useRef(null);
 
   // custom events from web components: listen on the element
@@ -41,7 +42,10 @@ export default function App() {
       </p>
 
       {/* controlled NATIVE input with the cyber skin */}
-      <div className="cyber-field" style={{ maxWidth: '20rem', marginTop: '1rem' }}>
+      <div
+        className="cyber-field"
+        style={{ maxWidth: '20rem', marginTop: '1rem' }}
+      >
         <label htmlFor="callsign">Callsign (controlled)</label>
         <input
           id="callsign"
@@ -52,7 +56,9 @@ export default function App() {
       </div>
       <p className="cyber-text cyber-text--dim">
         Bound value:{' '}
-        <span className="cyber-terminal" data-test="callsign">{callsign}</span>
+        <span className="cyber-terminal" data-test="callsign">
+          {callsign}
+        </span>
       </p>
 
       {/* state-driven progress bar via CSS custom property */}
@@ -64,7 +70,11 @@ export default function App() {
           <span>Hull</span>
           <span>{hull}%</span>
         </div>
-        <div className="cyber-progress__track" role="progressbar" aria-valuenow={hull}>
+        <div
+          className="cyber-progress__track"
+          role="progressbar"
+          aria-valuenow={hull}
+        >
           <div className="cyber-progress__bar" />
         </div>
       </div>
@@ -130,7 +140,38 @@ export default function App() {
       </cyber-modal>
       <p className="cyber-text cyber-text--dim">
         cyber-close events received:{' '}
-        <span className="cyber-terminal" data-test="close-count">{closeCount}</span>
+        <span className="cyber-terminal" data-test="close-count">
+          {closeCount}
+        </span>
+      </p>
+
+      {/* form-associated elements: native <form> submission + validation */}
+      <form
+        style={{ display: 'grid', gap: '1rem', maxWidth: '20rem' }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setSubmitted(
+            JSON.stringify(Object.fromEntries(new FormData(e.target))),
+          );
+        }}
+      >
+        <cyber-input name="pilot" label="Pilot" required minlength={3} />
+        <cyber-select
+          name="sector"
+          label="Sector"
+          placeholder="Choose"
+          required
+        >
+          <cyber-option value="kepler">Kepler Belt</cyber-option>
+          <cyber-option value="orion">Orion Reach</cyber-option>
+        </cyber-select>
+        <button className="cyber-btn cyber-btn--primary">Launch</button>
+      </form>
+      <p className="cyber-text cyber-text--dim">
+        Submitted:{' '}
+        <span className="cyber-terminal" data-test="submitted">
+          {submitted}
+        </span>
       </p>
     </main>
   );

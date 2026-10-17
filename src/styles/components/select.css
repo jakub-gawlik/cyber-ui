@@ -1,5 +1,9 @@
 /* ==========================================================================
-   .cyber-select — styled native <select> with a custom chevron.
+   .cyber-select — styled native <select> with a custom chevron. Also the
+   trigger of <cyber-select> (a role="combobox" element), where the popup
+   is a .cyber-menu listbox.
+   States: :disabled or aria-disabled="true"; :user-invalid or
+   aria-invalid="true" → danger border.
    ========================================================================== */
 
 .cyber-select {
@@ -9,9 +13,12 @@
   padding: 0.55em 2.4em 0.55em 0.9em;
   background-color: color-mix(in srgb, var(--cyber-primary) 4%, transparent);
   /* chevron drawn with two gradient strokes */
-  background-image: linear-gradient(45deg, transparent 50%, var(--cyber-primary) 50%),
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--cyber-primary) 50%),
     linear-gradient(135deg, var(--cyber-primary) 50%, transparent 50%);
-  background-position: calc(100% - 1.2em) 50%, calc(100% - 0.85em) 50%;
+  background-position:
+    calc(100% - 1.2em) 50%,
+    calc(100% - 0.85em) 50%;
   background-size: 0.35em 0.35em;
   background-repeat: no-repeat;
   border: var(--cyber-border-width) solid var(--cyber-border-dim);
@@ -21,7 +28,9 @@
   font-size: 0.9rem;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .cyber-select:hover {
@@ -34,9 +43,16 @@
   box-shadow: 0 0 8px var(--cyber-glow-color);
 }
 
-.cyber-select:disabled {
+.cyber-select:disabled,
+.cyber-select[aria-disabled="true"] {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.cyber-select:user-invalid,
+.cyber-select[aria-invalid="true"] {
+  border-color: var(--cyber-danger);
+  border-left-color: var(--cyber-danger);
 }
 
 /* dropdown list rendering is mostly OS-controlled; keep options legible */

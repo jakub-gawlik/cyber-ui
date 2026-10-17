@@ -24,11 +24,20 @@
   flex: none;
   border: var(--cyber-border-width) solid var(--cyber-border);
   background: var(--cyber-tint);
-  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+  clip-path: polygon(
+    3px 0,
+    100% 0,
+    100% calc(100% - 3px),
+    calc(100% - 3px) 100%,
+    0 100%,
+    0 3px
+  );
   display: grid;
   place-content: center;
   cursor: pointer;
-  transition: background 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    background 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .cyber-checkbox input[type="checkbox"]::before {
@@ -56,5 +65,6 @@
 }
 
 .cyber-checkbox:hover input[type="checkbox"]:not(:disabled) {
-  box-shadow: inset 0 0 8px color-mix(in srgb, var(--cyber-primary) 15%, transparent);
+  box-shadow: inset 0 0 8px
+    color-mix(in srgb, var(--cyber-primary) 15%, transparent);
 }

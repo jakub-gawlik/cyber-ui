@@ -20,7 +20,9 @@
   width: 14px;
   height: 14px;
   pointer-events: none;
-  transition: width 0.2s ease, height 0.2s ease;
+  transition:
+    width 0.2s ease,
+    height 0.2s ease;
 }
 
 /* brackets stretch toward the corners on hover — real-pointer devices only */

@@ -46,9 +46,11 @@
 
   /* -- typography (webfonts are the consumer's choice; stacks expect
         Orbitron / Rajdhani / Share Tech Mono) ----------------------------- */
-  --cyber-font-display: "Orbitron", "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  --cyber-font-display:
+    "Orbitron", "Rajdhani", "Segoe UI", system-ui, sans-serif;
   --cyber-font-body: "Rajdhani", "Segoe UI", system-ui, sans-serif;
-  --cyber-font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --cyber-font-mono:
+    "Share Tech Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   /* -- spacing ----------------------------------------------------------- */
   --cyber-space-1: 0.25rem;
@@ -75,7 +77,8 @@
 
   --cyber-glow-color: color-mix(in srgb, var(--cyber-primary) 55%, transparent);
   --cyber-glow: 0 0 10px var(--cyber-glow-color);
-  --cyber-glow-strong: 0 0 4px var(--cyber-glow-color), 0 0 18px var(--cyber-glow-color);
+  --cyber-glow-strong:
+    0 0 4px var(--cyber-glow-color), 0 0 18px var(--cyber-glow-color);
 
   /* modal backdrop / overlay dim layer */
   --cyber-scrim: color-mix(in srgb, var(--cyber-bg) 72%, transparent);

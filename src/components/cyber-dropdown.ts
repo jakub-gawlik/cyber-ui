@@ -1,17 +1,30 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { LitElement, html, css, unsafeCSS, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { DismissController } from './internal/dismiss.js';
+import { Typeahead } from './internal/typeahead.js';
 import dropdownStyles from '../styles/components/dropdown.css?inline';
 
 /**
  * <cyber-dropdown> — trigger + anchored menu. Closes on Escape, outside
- * click, or item selection. Arrow keys move focus through the items.
- * Flips above the trigger when there is no room below.
+ * click, or item selection; Escape and selection return focus to the
+ * trigger. Arrow keys / Home / End move focus through the items, and typing
+ * jumps to the next item whose text starts with the typed characters
+ * (typeahead). Flips above the trigger when there is no room below.
  *
- * Slots: `trigger` (a button), default (menu items — give them
- * `role="menuitem"`; `.cyber-menu__item` from the global stylesheet or the
- * built-in slotted styling provides the skin).
- * Events: `cyber-open`, `cyber-close`, `cyber-select` (detail: { item }).
+ * Escape is scoped: it closes this menu only when the key event comes from
+ * inside it (or focus is inside it), or when it is the top-most open
+ * overlay — so nested / stacked overlays close one layer at a time.
+ *
+ * @slot trigger - The button that toggles the menu. It receives
+ *   `aria-haspopup="menu"` and a live `aria-expanded`.
+ * @slot - Menu items. Give them `role="menuitem"`; `.cyber-menu__item`
+ *   from the global stylesheet or the built-in slotted styling provides the
+ *   skin.
+ * @csspart menu - The `role="menu"` surface.
+ * @fires {CustomEvent} cyber-open - The menu opened.
+ * @fires {CustomEvent} cyber-close - The menu closed.
+ * @fires {CustomEvent<{ item: HTMLElement }>} cyber-select - A menu item was
+ *   chosen; the menu closes right after.
  *
  * @example
  * <cyber-dropdown>
@@ -63,7 +76,9 @@ export class CyberDropdown extends LitElement {
         color: var(--cyber-text);
         text-decoration: none;
         cursor: pointer;
-        transition: background 0.1s ease, color 0.1s ease;
+        transition:
+          background 0.1s ease,
+          color 0.1s ease;
       }
 
       ::slotted([role='menuitem']:hover),
@@ -84,11 +99,15 @@ export class CyberDropdown extends LitElement {
 
   @query('.cyber-dropdown__menu') private menu!: HTMLElement;
 
+  private trigger: HTMLElement | null = null;
+
+  private typeahead = new Typeahead();
+
   constructor() {
     super();
     new DismissController(this, {
       isOpen: () => this.open,
-      dismiss: () => this.hide(),
+      dismiss: (reason) => this.hide(true, reason === 'escape'),
     });
   }
 
@@ -97,7 +116,8 @@ export class CyberDropdown extends LitElement {
       this.renderRoot.querySelector<HTMLSlotElement>('slot:not([name])');
     return (slot?.assignedElements() ?? []).filter(
       (el): el is HTMLElement =>
-        el instanceof HTMLElement && el.getAttribute('aria-disabled') !== 'true',
+        el instanceof HTMLElement &&
+        el.getAttribute('aria-disabled') !== 'true',
     );
   }
 
@@ -111,10 +131,36 @@ export class CyberDropdown extends LitElement {
     });
   }
 
-  hide(emit = true) {
+  hide(emit = true, restoreFocus = false) {
     if (!this.open) return;
     this.open = false;
     if (emit) this.emit('cyber-close');
+    if (restoreFocus) this.trigger?.focus();
+  }
+
+  protected updated(changed: PropertyValues<this>) {
+    if (changed.has('open')) this.syncTrigger();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.typeahead.dispose();
+  }
+
+  private syncTrigger() {
+    this.trigger?.setAttribute('aria-haspopup', 'menu');
+    this.trigger?.setAttribute('aria-expanded', String(this.open));
+  }
+
+  private onTriggerSlotChange(event: Event) {
+    const slot = event.target as HTMLSlotElement;
+    const trigger =
+      slot.assignedElements().find((el) => el instanceof HTMLElement) ?? null;
+    if (trigger === this.trigger) return;
+    this.trigger?.removeAttribute('aria-haspopup');
+    this.trigger?.removeAttribute('aria-expanded');
+    this.trigger = trigger as HTMLElement | null;
+    this.syncTrigger();
   }
 
   private emit(name: string, detail?: unknown) {
@@ -132,14 +178,15 @@ export class CyberDropdown extends LitElement {
   }
 
   private onTriggerClick = () => {
-    this.open ? this.hide() : this.show();
+    if (this.open) this.hide();
+    else this.show();
   };
 
   private onMenuClick = (event: Event) => {
     const item = (event.target as HTMLElement).closest('[role="menuitem"]');
     if (item) {
       this.emit('cyber-select', { item });
-      this.hide();
+      this.hide(true, true);
     }
   };
 
@@ -163,6 +210,12 @@ export class CyberDropdown extends LitElement {
       case 'Tab':
         this.hide();
         break;
+      default:
+        next = this.typeahead.match(
+          event,
+          items.map((item) => item.textContent ?? ''),
+          current,
+        );
     }
     if (next !== null) {
       event.preventDefault();
@@ -175,7 +228,7 @@ export class CyberDropdown extends LitElement {
       <slot
         name="trigger"
         @click=${this.onTriggerClick}
-        aria-haspopup="menu"
+        @slotchange=${this.onTriggerSlotChange}
       ></slot>
       <div
         class="cyber-dropdown__menu cyber-menu"

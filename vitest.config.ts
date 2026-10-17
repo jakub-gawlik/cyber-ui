@@ -1,17 +1,59 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 
-// Tests run in a real Chromium: the components lean on platform behavior
-// (native <dialog>, shadow DOM slot assignment, focus) that DOM emulators
-// don't implement faithfully.
+// macOS 27 protects ~/Library/Application Support/Firefox, which Playwright's
+// bundled Firefox also uses, so it quits with "Could not find profile
+// folder" (microsoft/playwright#42768). Pointing CFFIXED_USER_HOME at a fresh
+// per-run directory works around it; per-run, because a shared one collides
+// between concurrent runs. Remove once Playwright ships a fix.
+function firefoxProvider() {
+  if (process.platform !== 'darwin') return playwright();
+  const home = mkdtempSync(join(tmpdir(), 'cyber-ui-firefox-'));
+  process.on('exit', () => {
+    try {
+      rmSync(home, { recursive: true, force: true });
+    } catch {
+      // best-effort: macOS may refuse to delete the Downloads folder Firefox
+      // creates in there; the OS cleans the temp dir eventually anyway
+    }
+  });
+  return playwright({
+    launchOptions: { env: { ...process.env, CFFIXED_USER_HOME: home } },
+  });
+}
+
+// Tests run in real browsers — Chromium, Firefox and WebKit: the components
+// lean on platform behavior (native <dialog>, shadow DOM slot assignment,
+// focus) that DOM emulators don't implement faithfully, and that differs
+// between engines.
 export default defineConfig({
+  // pre-bundle every lit entry the elements import, so discovering one
+  // mid-run doesn't reload the page under a running test
+  optimizeDeps: {
+    include: [
+      'lit',
+      'lit/decorators.js',
+      'lit/directives/if-defined.js',
+      'lit/directives/live.js',
+    ],
+  },
   test: {
     include: ['tests/**/*.test.ts'],
+    // one file at a time per browser: tests press real keys (userEvent),
+    // and files running in parallel frames would steal each other's focus
+    fileParallelism: false,
     browser: {
       enabled: true,
       headless: true,
       provider: playwright(),
-      instances: [{ browser: 'chromium' }],
+      instances: [
+        { browser: 'chromium' },
+        { browser: 'firefox', provider: firefoxProvider() },
+        { browser: 'webkit' },
+      ],
       screenshotFailures: false,
     },
   },

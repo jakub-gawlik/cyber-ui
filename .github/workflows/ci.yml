@@ -15,9 +15,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
       - run: npm run typecheck
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      # needs dist/: generated React/Vue typings + per-entry types via exports
+      - run: npm run typecheck:dist
+      # bundle-size budgets (.size-limit.json)
+      - run: npm run size
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test
 
   smoke:
