@@ -20,8 +20,9 @@ const markup = `
 
 const menuOf = (dd: CyberDropdown) =>
   dd.shadowRoot!.querySelector<HTMLElement>('[part="menu"]')!;
-const itemsOf = (dd: CyberDropdown) =>
-  [...dd.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')];
+const itemsOf = (dd: CyberDropdown) => [
+  ...dd.querySelectorAll<HTMLButtonElement>('[role="menuitem"]'),
+];
 const triggerOf = (dd: CyberDropdown) =>
   dd.querySelector<HTMLButtonElement>('[slot="trigger"]')!;
 
@@ -138,7 +139,9 @@ describe('<cyber-dropdown>', () => {
     it('moves the attributes to a replacement trigger', async () => {
       const dd = fixture<CyberDropdown>(markup);
       const old = triggerOf(dd);
-      await vi.waitFor(() => expect(old.getAttribute('aria-haspopup')).toBe('menu'));
+      await vi.waitFor(() =>
+        expect(old.getAttribute('aria-haspopup')).toBe('menu'),
+      );
 
       const replacement = document.createElement('button');
       replacement.slot = 'trigger';
@@ -267,7 +270,9 @@ describe('<cyber-dropdown>', () => {
       triggerOf(a).click();
       await a.updateComplete;
       triggerOf(b).click(); // synthetic click: no pointerdown, so `a` stays open
-      await vi.waitFor(() => expect(document.activeElement).toBe(itemsOf(b)[0]));
+      await vi.waitFor(() =>
+        expect(document.activeElement).toBe(itemsOf(b)[0]),
+      );
       expect(a.open).toBe(true);
       return [a, b] as const;
     }
@@ -343,7 +348,9 @@ describe('<cyber-dropdown>', () => {
         const dd = dialog.querySelector('cyber-dropdown')!;
         await dd.updateComplete;
         triggerOf(dd).click();
-        await vi.waitFor(() => expect(document.activeElement).toBe(itemsOf(dd)[0]));
+        await vi.waitFor(() =>
+          expect(document.activeElement).toBe(itemsOf(dd)[0]),
+        );
 
         const event = keydown(itemsOf(dd)[0], 'Escape');
         await dd.updateComplete;

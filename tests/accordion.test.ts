@@ -1,9 +1,15 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import type { CyberAccordion, CyberAccordionItem } from '../src/index.js';
-import { captureEvents, cleanupFixtures, expectAccessible, fixture } from './helpers.js';
+import {
+  captureEvents,
+  cleanupFixtures,
+  expectAccessible,
+  fixture,
+} from './helpers.js';
 
-const itemsOf = (acc: CyberAccordion) =>
-  [...acc.querySelectorAll<CyberAccordionItem>('cyber-accordion-item')];
+const itemsOf = (acc: CyberAccordion) => [
+  ...acc.querySelectorAll<CyberAccordionItem>('cyber-accordion-item'),
+];
 const triggerOf = (item: CyberAccordionItem) =>
   item.shadowRoot!.querySelector<HTMLButtonElement>('[part="trigger"]')!;
 

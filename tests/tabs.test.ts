@@ -17,13 +17,16 @@ const markup = `
   </cyber-tabs>
 `;
 
-const buttons = (tabs: CyberTabs) =>
-  [...tabs.shadowRoot!.querySelectorAll<HTMLButtonElement>('.cyber-tab')];
-const panels = (tabs: CyberTabs) =>
-  [...tabs.querySelectorAll<CyberTabPanel>('cyber-tab-panel')];
+const buttons = (tabs: CyberTabs) => [
+  ...tabs.shadowRoot!.querySelectorAll<HTMLButtonElement>('.cyber-tab'),
+];
+const panels = (tabs: CyberTabs) => [
+  ...tabs.querySelectorAll<CyberTabPanel>('cyber-tab-panel'),
+];
 
-const regions = (tabs: CyberTabs) =>
-  [...tabs.shadowRoot!.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+const regions = (tabs: CyberTabs) => [
+  ...tabs.shadowRoot!.querySelectorAll<HTMLElement>('[role="tabpanel"]'),
+];
 const focusedTab = (tabs: CyberTabs) => tabs.shadowRoot!.activeElement;
 
 async function mounted(html = markup): Promise<CyberTabs> {
@@ -143,7 +146,9 @@ describe('<cyber-tabs>', () => {
 
   describe('selected clamping', () => {
     it('clamps an out-of-range initial attribute', async () => {
-      const tabs = await mounted(markup.replace('<cyber-tabs>', '<cyber-tabs selected="7">'));
+      const tabs = await mounted(
+        markup.replace('<cyber-tabs>', '<cyber-tabs selected="7">'),
+      );
       await tabs.updateComplete;
       expect(tabs.selected).toBe(2);
       expect(tabs.getAttribute('selected')).toBe('2');
@@ -180,7 +185,10 @@ describe('<cyber-tabs>', () => {
   });
 
   describe('orientation="vertical"', () => {
-    const vertical = markup.replace('<cyber-tabs>', '<cyber-tabs orientation="vertical">');
+    const vertical = markup.replace(
+      '<cyber-tabs>',
+      '<cyber-tabs orientation="vertical">',
+    );
 
     it('marks the tablist vertical and applies the vertical layout', async () => {
       const tabs = await mounted(vertical);
@@ -222,7 +230,10 @@ describe('<cyber-tabs>', () => {
   });
 
   describe('activation="manual"', () => {
-    const manual = markup.replace('<cyber-tabs>', '<cyber-tabs activation="manual">');
+    const manual = markup.replace(
+      '<cyber-tabs>',
+      '<cyber-tabs activation="manual">',
+    );
 
     it('moves focus and the roving tabindex with arrows without selecting', async () => {
       const tabs = await mounted(manual);

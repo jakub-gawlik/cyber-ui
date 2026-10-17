@@ -6,6 +6,8 @@ import tabsStyles from '../styles/components/tabs.css?inline';
  * <cyber-tab-panel> — one panel inside <cyber-tabs>. The `label` attribute
  * becomes the tab button's text. The surrounding <cyber-tabs> wraps it in
  * its `role="tabpanel"` region, so the element itself carries no role.
+ *
+ * @slot - Panel content.
  */
 @customElement('cyber-tab-panel')
 export class CyberTabPanel extends LitElement {
@@ -55,7 +57,14 @@ let nextTabsId = 0;
  * - `activation="manual"` — arrows move focus only; Enter / Space (or a
  *   click) selects. Default `automatic` selects on focus.
  *
- * Parts: base, list, tab, panels, panel.
+ * @slot - `<cyber-tab-panel>` elements, one per tab.
+ * @csspart base - Wrapper around the strip and the panels.
+ * @csspart list - The `role="tablist"` strip.
+ * @csspart tab - Each tab button.
+ * @csspart panels - Wrapper around the panel regions.
+ * @csspart panel - Each `role="tabpanel"` region.
+ * @fires {CustomEvent<{ index: number; label: string }>} cyber-tab-change -
+ *   The selected tab changed through user interaction.
  *
  * @example
  * <cyber-tabs orientation="vertical" activation="manual">
@@ -65,6 +74,7 @@ let nextTabsId = 0;
  */
 @customElement('cyber-tabs')
 export class CyberTabs extends LitElement {
+  /** @internal */
   static shadowRootOptions: ShadowRootInit = {
     ...LitElement.shadowRootOptions,
     // panels are assigned to their own tabpanel region by index
@@ -128,7 +138,9 @@ export class CyberTabs extends LitElement {
   protected willUpdate(changed: PropertyValues<this>) {
     if (this.panels.length > 0) {
       const max = this.panels.length - 1;
-      const index = Number.isFinite(this.selected) ? Math.trunc(this.selected) : 0;
+      const index = Number.isFinite(this.selected)
+        ? Math.trunc(this.selected)
+        : 0;
       const clamped = Math.min(Math.max(index, 0), max);
       if (clamped !== this.selected) this.selected = clamped;
     }
@@ -145,7 +157,9 @@ export class CyberTabs extends LitElement {
   }
 
   private get tabs(): HTMLButtonElement[] {
-    return [...this.renderRoot.querySelectorAll<HTMLButtonElement>('.cyber-tab')];
+    return [
+      ...this.renderRoot.querySelectorAll<HTMLButtonElement>('.cyber-tab'),
+    ];
   }
 
   private tabId(i: number) {
@@ -208,7 +222,10 @@ export class CyberTabs extends LitElement {
   render() {
     const vertical = this.orientation === 'vertical';
     return html`
-      <div class="cyber-tabs ${vertical ? 'cyber-tabs--vertical' : ''}" part="base">
+      <div
+        class="cyber-tabs ${vertical ? 'cyber-tabs--vertical' : ''}"
+        part="base"
+      >
         <div
           class="cyber-tabs__list"
           part="list"

@@ -42,9 +42,12 @@ let nextToastId = 0;
  * Danger and warning toasts are announced assertively (`role="alert"`),
  * info and success politely (`role="status"`).
  *
- * Events: `cyber-toast-dismiss` (detail: { id, reason }) when a toast starts
- * leaving; reason is `timeout`, `close` (the ✕ button), `action` (the
- * action button) or `api` (`dismiss(id)`).
+ * @attr {'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'} position -
+ *   Corner the stack is pinned to (default `top-right`).
+ * @csspart action - The optional action button of a toast.
+ * @fires {CustomEvent<{ id: number; reason: ToastDismissReason }>} cyber-toast-dismiss -
+ *   A toast started leaving; `reason` is `timeout`, `close` (the ✕ button),
+ *   `action` (the action button) or `api` (`dismiss(id)`).
  */
 @customElement('cyber-toaster')
 export class CyberToaster extends LitElement {
@@ -90,7 +93,10 @@ export class CyberToaster extends LitElement {
   @state() private toasts: ActiveToast[] = [];
 
   /** timer handle + expiry per toast, so hover can pause the countdown */
-  private timers = new Map<number, { handle: number; expires: number; remaining: number }>();
+  private timers = new Map<
+    number,
+    { handle: number; expires: number; remaining: number }
+  >();
 
   show(options: ToastOptions | string): number {
     const opts = typeof options === 'string' ? { message: options } : options;
@@ -175,27 +181,33 @@ export class CyberToaster extends LitElement {
         (t) => html`
           <div
             class="cyber-toast cyber-toast--${t.variant}"
-            role=${t.variant === 'danger' || t.variant === 'warning'
-              ? 'alert'
-              : 'status'}
+            role=${
+              t.variant === 'danger' || t.variant === 'warning'
+                ? 'alert'
+                : 'status'
+            }
             ?data-leaving=${t.leaving}
             @mouseenter=${() => this.pause(t.id)}
             @mouseleave=${() => this.resume(t.id)}
           >
             <div class="cyber-toast__body">
-              ${t.title
-                ? html`<div class="cyber-toast__title">${t.title}</div>`
-                : nothing}
+              ${
+                t.title
+                  ? html`<div class="cyber-toast__title">${t.title}</div>`
+                  : nothing
+              }
               <div class="cyber-toast__message">${t.message}</div>
-              ${t.action
-                ? html`<button
-                    class="cyber-toast__action"
-                    part="action"
-                    @click=${() => this.onAction(t)}
-                  >
-                    ${t.action.label}
-                  </button>`
-                : nothing}
+              ${
+                t.action
+                  ? html`<button
+                      class="cyber-toast__action"
+                      part="action"
+                      @click=${() => this.onAction(t)}
+                    >
+                      ${t.action.label}
+                    </button>`
+                  : nothing
+              }
             </div>
             <button
               class="cyber-toast__close"
@@ -232,8 +244,7 @@ export function toast(
     toaster = document.createElement('cyber-toaster') as CyberToaster;
     document.body.append(toaster);
   }
-  const opts =
-    typeof message === 'string' ? { message, ...options } : message;
+  const opts = typeof message === 'string' ? { message, ...options } : message;
   return toaster.show(opts);
 }
 

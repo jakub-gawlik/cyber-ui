@@ -13,11 +13,12 @@ function firefoxProvider() {
   if (process.platform !== 'darwin') return playwright();
   const home = mkdtempSync(join(tmpdir(), 'cyber-ui-firefox-'));
   process.on('exit', () => {
-    // best-effort: macOS may refuse to delete the Downloads folder Firefox
-    // creates in there; the OS cleans the temp dir eventually anyway
     try {
       rmSync(home, { recursive: true, force: true });
-    } catch {}
+    } catch {
+      // best-effort: macOS may refuse to delete the Downloads folder Firefox
+      // creates in there; the OS cleans the temp dir eventually anyway
+    }
   });
   return playwright({
     launchOptions: { env: { ...process.env, CFFIXED_USER_HOME: home } },

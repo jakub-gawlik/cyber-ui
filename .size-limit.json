@@ -1,0 +1,28 @@
+[
+  {
+    "name": "all elements (JS, lit excluded)",
+    "path": "dist/cyber-ui.js",
+    "import": "*",
+    "ignore": ["lit"],
+    "limit": "8.5 kB"
+  },
+  {
+    "name": "all elements + lit",
+    "path": "dist/cyber-ui.js",
+    "import": "*",
+    "limit": "14.5 kB"
+  },
+  {
+    "name": "one element: <cyber-modal> (lit excluded)",
+    "path": "dist/components/cyber-modal.js",
+    "import": "*",
+    "ignore": ["lit"],
+    "limit": "2 kB"
+  },
+  {
+    "name": "global stylesheet",
+    "path": "dist/cyber-ui.css",
+    "rolldown": false,
+    "limit": "6 kB"
+  }
+]

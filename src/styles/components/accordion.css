@@ -28,7 +28,9 @@
   color: var(--cyber-text-dim);
   cursor: pointer;
   border-top: var(--cyber-border-width) solid var(--cyber-border-dim);
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .cyber-accordion__trigger:first-child,

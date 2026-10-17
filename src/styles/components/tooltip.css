@@ -27,7 +27,8 @@
   background: var(--cyber-surface);
   border: var(--cyber-border-width) solid var(--cyber-border);
   border-left: 2px solid var(--cyber-primary);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--cyber-shade) 55%, transparent),
+  box-shadow:
+    0 0 14px color-mix(in srgb, var(--cyber-shade) 55%, transparent),
     0 0 8px var(--cyber-glow-color);
   font-family: var(--cyber-font-mono);
   font-size: 0.72rem;
@@ -39,7 +40,9 @@
   white-space: pre-line;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .cyber-tooltip:hover::after,

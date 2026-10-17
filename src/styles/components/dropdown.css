@@ -8,9 +8,17 @@
   padding: var(--cyber-space-1) 0;
   background: var(--cyber-surface);
   border: var(--cyber-border-width) solid var(--cyber-border);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--cyber-shade) 60%, transparent),
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--cyber-shade) 60%, transparent),
     0 0 10px var(--cyber-glow-color);
-  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  clip-path: polygon(
+    8px 0,
+    100% 0,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    0 100%,
+    0 8px
+  );
 }
 
 .cyber-menu__item {
@@ -29,7 +37,9 @@
   color: var(--cyber-text);
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease;
 }
 
 .cyber-menu__item:hover,

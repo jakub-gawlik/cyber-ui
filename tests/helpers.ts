@@ -19,7 +19,10 @@ export function cleanupFixtures() {
 }
 
 /** Collect every `name` event fired on (or bubbling through) `target`. */
-export function captureEvents(target: EventTarget, name: string): CustomEvent[] {
+export function captureEvents(
+  target: EventTarget,
+  name: string,
+): CustomEvent[] {
   const events: CustomEvent[] = [];
   target.addEventListener(name, (event) => events.push(event as CustomEvent));
   return events;
@@ -55,7 +58,8 @@ export async function expectAccessible(context: Element = document.body) {
     rules: { 'color-contrast': { enabled: false } },
   });
   const summary = results.violations.map(
-    (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(', ')})`,
+    (v) =>
+      `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(', ')})`,
   );
   expect(summary).toEqual([]);
 }

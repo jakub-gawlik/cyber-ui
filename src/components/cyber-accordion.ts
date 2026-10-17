@@ -5,7 +5,13 @@ import accordionStyles from '../styles/components/accordion.css?inline';
 /**
  * <cyber-accordion-item> — one expandable section. `heading` attribute or
  * `header` slot labels the trigger; default slot is the content.
- * Emits `cyber-toggle` with `{ open }`.
+ *
+ * @slot header - Trigger label (alternative to the `heading` attribute).
+ * @slot - Section content.
+ * @csspart trigger - The expand / collapse button.
+ * @csspart content - The content wrapper.
+ * @fires {CustomEvent<{ open: boolean }>} cyber-toggle - The section was
+ *   expanded or collapsed from its trigger or `toggle()`.
  */
 @customElement('cyber-accordion-item')
 export class CyberAccordionItem extends LitElement {
@@ -74,6 +80,8 @@ export class CyberAccordionItem extends LitElement {
 /**
  * <cyber-accordion> — container for <cyber-accordion-item>s. With the
  * `single` attribute, opening one item closes the others.
+ *
+ * @slot - `<cyber-accordion-item>` elements.
  *
  * @example
  * <cyber-accordion single>

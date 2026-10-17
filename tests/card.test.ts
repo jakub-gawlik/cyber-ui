@@ -25,7 +25,9 @@ describe('<cyber-card>', () => {
   });
 
   it('collapses sections whose slots are empty', async () => {
-    const card = fixture<CyberCard>(`<cyber-card><p>Body only</p></cyber-card>`);
+    const card = fixture<CyberCard>(
+      `<cyber-card><p>Body only</p></cyber-card>`,
+    );
     await card.updateComplete;
     expect(section(card, 'media').hidden).toBe(true);
     expect(section(card, 'title').hidden).toBe(true);

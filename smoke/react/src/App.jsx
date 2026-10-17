@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { toast } from '@jgawlik/cyber-ui';
+import { toast } from '@jgawlik/cyber-ui/toast';
 
 const EVENTS = [
   {
@@ -41,7 +41,10 @@ export default function App() {
       </p>
 
       {/* controlled NATIVE input with the cyber skin */}
-      <div className="cyber-field" style={{ maxWidth: '20rem', marginTop: '1rem' }}>
+      <div
+        className="cyber-field"
+        style={{ maxWidth: '20rem', marginTop: '1rem' }}
+      >
         <label htmlFor="callsign">Callsign (controlled)</label>
         <input
           id="callsign"
@@ -52,7 +55,9 @@ export default function App() {
       </div>
       <p className="cyber-text cyber-text--dim">
         Bound value:{' '}
-        <span className="cyber-terminal" data-test="callsign">{callsign}</span>
+        <span className="cyber-terminal" data-test="callsign">
+          {callsign}
+        </span>
       </p>
 
       {/* state-driven progress bar via CSS custom property */}
@@ -64,7 +69,11 @@ export default function App() {
           <span>Hull</span>
           <span>{hull}%</span>
         </div>
-        <div className="cyber-progress__track" role="progressbar" aria-valuenow={hull}>
+        <div
+          className="cyber-progress__track"
+          role="progressbar"
+          aria-valuenow={hull}
+        >
           <div className="cyber-progress__bar" />
         </div>
       </div>
@@ -130,7 +139,9 @@ export default function App() {
       </cyber-modal>
       <p className="cyber-text cyber-text--dim">
         cyber-close events received:{' '}
-        <span className="cyber-terminal" data-test="close-count">{closeCount}</span>
+        <span className="cyber-terminal" data-test="close-count">
+          {closeCount}
+        </span>
       </p>
     </main>
   );

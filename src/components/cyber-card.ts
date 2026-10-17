@@ -8,8 +8,16 @@ import cardStyles from '../styles/components/card.css?inline';
  * a footer link row. Shares its stylesheet with the class-based
  * `.cyber-card` (see styles/components/card.css).
  *
- * Slots: `media` (image), `title`, default (content), `footer` (links).
- * Parts: card, media, body, title, content, footer.
+ * @slot media - Header image; the section collapses when empty.
+ * @slot title - Card title; the section collapses when empty.
+ * @slot - Body content.
+ * @slot footer - Link row; the section collapses when empty.
+ * @csspart card - The <article> frame.
+ * @csspart media - The media <figure>.
+ * @csspart body - Wrapper around title and content.
+ * @csspart title - The title <h3>.
+ * @csspart content - The content wrapper.
+ * @csspart footer - The footer link row.
  *
  * @example
  * <cyber-card>
@@ -35,7 +43,11 @@ export class CyberCard extends LitElement {
       /* <cyber-card class="cyber-glass"> — frosted variant, matching the
          .cyber-glass utility in effects.css */
       :host(.cyber-glass) .cyber-card {
-        background-color: color-mix(in srgb, var(--cyber-surface) 52%, transparent);
+        background-color: color-mix(
+          in srgb,
+          var(--cyber-surface) 52%,
+          transparent
+        );
         -webkit-backdrop-filter: blur(14px) saturate(1.4);
         backdrop-filter: blur(14px) saturate(1.4);
       }
@@ -50,7 +62,9 @@ export class CyberCard extends LitElement {
         text-decoration: none;
         border-bottom: 1px solid transparent;
         padding-bottom: 2px;
-        transition: text-shadow 0.15s ease, border-color 0.15s ease;
+        transition:
+          text-shadow 0.15s ease,
+          border-color 0.15s ease;
       }
 
       ::slotted(a:hover),
@@ -76,7 +90,11 @@ export class CyberCard extends LitElement {
   render() {
     return html`
       <article class="cyber-card" part="card">
-        <figure class="cyber-card__media" part="media" ?hidden=${!this.hasMedia}>
+        <figure
+          class="cyber-card__media"
+          part="media"
+          ?hidden=${!this.hasMedia}
+        >
           <slot name="media" @slotchange=${this.onSlotChange}></slot>
         </figure>
         <div class="cyber-card__body" part="body">
@@ -87,7 +105,11 @@ export class CyberCard extends LitElement {
             <slot></slot>
           </div>
         </div>
-        <footer class="cyber-card__footer" part="footer" ?hidden=${!this.hasFooter}>
+        <footer
+          class="cyber-card__footer"
+          part="footer"
+          ?hidden=${!this.hasFooter}
+        >
           <slot name="footer" @slotchange=${this.onSlotChange}></slot>
         </footer>
       </article>

@@ -1,28 +1,34 @@
-/* cyber-ui — global stylesheet. Builds to dist/cyber-ui.css */
+/* cyber-ui — global stylesheet. Builds to dist/cyber-ui.css
 
-@import "./tokens.css";
-@import "./themes.css";
-@import "./base.css";
+   Everything sits in cascade layers, so any unlayered consumer CSS wins
+   without specificity fights. Order (lowest first) is declared up front;
+   vite.config.ts wraps the per-file dist/styles/*.css the same way. */
 
-@import "./components/button.css";
-@import "./components/link.css";
-@import "./components/card.css";
-@import "./components/panel.css";
-@import "./components/badge.css";
-@import "./components/divider.css";
-@import "./components/input.css";
-@import "./components/select.css";
-@import "./components/checkbox.css";
-@import "./components/radio.css";
-@import "./components/modal.css";
-@import "./components/tabs.css";
-@import "./components/dropdown.css";
-@import "./components/accordion.css";
-@import "./components/progress.css";
-@import "./components/stat.css";
-@import "./components/tooltip.css";
-@import "./components/toast.css";
+@layer cyber-ui.tokens, cyber-ui.base, cyber-ui.components, cyber-ui.fx;
 
-/* effects import last so utilities like .cyber-glass win over component
+@import "./tokens.css" layer(cyber-ui.tokens);
+@import "./themes.css" layer(cyber-ui.tokens);
+@import "./base.css" layer(cyber-ui.base);
+
+@import "./components/button.css" layer(cyber-ui.components);
+@import "./components/link.css" layer(cyber-ui.components);
+@import "./components/card.css" layer(cyber-ui.components);
+@import "./components/panel.css" layer(cyber-ui.components);
+@import "./components/badge.css" layer(cyber-ui.components);
+@import "./components/divider.css" layer(cyber-ui.components);
+@import "./components/input.css" layer(cyber-ui.components);
+@import "./components/select.css" layer(cyber-ui.components);
+@import "./components/checkbox.css" layer(cyber-ui.components);
+@import "./components/radio.css" layer(cyber-ui.components);
+@import "./components/modal.css" layer(cyber-ui.components);
+@import "./components/tabs.css" layer(cyber-ui.components);
+@import "./components/dropdown.css" layer(cyber-ui.components);
+@import "./components/accordion.css" layer(cyber-ui.components);
+@import "./components/progress.css" layer(cyber-ui.components);
+@import "./components/stat.css" layer(cyber-ui.components);
+@import "./components/tooltip.css" layer(cyber-ui.components);
+@import "./components/toast.css" layer(cyber-ui.components);
+
+/* the fx layer is last, so utilities like .cyber-glass win over component
    backgrounds when composed (.cyber-panel.cyber-glass) */
-@import "./effects.css";
+@import "./effects.css" layer(cyber-ui.fx);

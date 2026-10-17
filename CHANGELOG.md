@@ -8,6 +8,23 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ### Added
 
+- Per-component entry points: `@jgawlik/cyber-ui/accordion`, `/card`,
+  `/dropdown`, `/modal`, `/tabs`, `/toast` — import only the elements you
+  use. The all-in-one `@jgawlik/cyber-ui` entry is unchanged.
+- Per-file stylesheets: `@jgawlik/cyber-ui/styles/<name>.css` for `tokens`,
+  `themes`, `base`, `effects` and every component skin (`button`, `card`,
+  `input`, …). Elements still need `styles/tokens.css` for their tokens.
+- `custom-elements.json` (Custom Elements Manifest), referenced from the
+  `customElements` field and exported as
+  `@jgawlik/cyber-ui/custom-elements.json`.
+- Editor completions: JetBrains IDEs pick up `web-types.json` automatically;
+  for VS Code, add
+  `node_modules/@jgawlik/cyber-ui/dist/vscode.html-custom-data.json` to the
+  `html.customData` setting.
+- Framework typings generated from the manifest: React 19
+  `JSX.IntrinsicElements` (`import type {} from '@jgawlik/cyber-ui/react'`)
+  and Vue `GlobalComponents` (`import type {} from '@jgawlik/cyber-ui/vue'`),
+  covering properties, attributes and typed `cyber-*` event handlers.
 - `<cyber-dropdown>`: typeahead — typing jumps to the next menu item whose
   text starts with the typed characters (repeat a character to cycle).
 - `<cyber-tabs>`: `orientation="vertical"` (stacked tab strip, ArrowUp /
@@ -27,6 +44,18 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ### Changed
 
+- `lit` is no longer bundled into the package: it's imported from the `lit`
+  dependency, so apps that use lit (or several lit-based libraries) ship a
+  single copy. All elements now cost ~7.4 kB on top of lit (~12.8 kB
+  including it; minified + brotli), and a single element as little as
+  ~1.8 kB.
+- All CSS is wrapped in cascade layers
+  `@layer cyber-ui.tokens, cyber-ui.base, cyber-ui.components, cyber-ui.fx`:
+  any unlayered CSS of yours now overrides cyber-ui without specificity
+  fights. If you relied on cyber-ui rules beating your own lower-specificity
+  rules, those rules now win instead; put them in a layer declared before
+  `cyber-ui` to restore the old precedence.
+- `package.json` `homepage` now points to https://cyberui.art.
 - `<cyber-dropdown>`: `aria-haspopup="menu"` and a live `aria-expanded` are
   now set on the slotted trigger element (they were on the internal
   `<slot>`, where assistive tech ignores them). Escape and item selection
@@ -60,10 +89,6 @@ All notable changes to cyber-ui are documented here. The format follows
   `css-components.md`, `web-components.md`, `effects.md`, `docs/README.md`)
   and the README's usage sections — it now lives on https://cyberui.art.
   The repo keeps developer docs only (`docs/architecture.md`).
-
-### Changed
-
-- `package.json` `homepage` now points to https://cyberui.art.
 
 ## [0.1.0] - 2026-10-07
 

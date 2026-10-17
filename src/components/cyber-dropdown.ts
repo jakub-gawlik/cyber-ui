@@ -14,11 +14,16 @@ import dropdownStyles from '../styles/components/dropdown.css?inline';
  * inside it (or focus is inside it), or when it is the top-most open
  * overlay — so nested / stacked overlays close one layer at a time.
  *
- * Slots: `trigger` (a button — it receives `aria-haspopup="menu"` and a
- * live `aria-expanded`), default (menu items — give them
- * `role="menuitem"`; `.cyber-menu__item` from the global stylesheet or the
- * built-in slotted styling provides the skin).
- * Events: `cyber-open`, `cyber-close`, `cyber-select` (detail: { item }).
+ * @slot trigger - The button that toggles the menu. It receives
+ *   `aria-haspopup="menu"` and a live `aria-expanded`.
+ * @slot - Menu items. Give them `role="menuitem"`; `.cyber-menu__item`
+ *   from the global stylesheet or the built-in slotted styling provides the
+ *   skin.
+ * @csspart menu - The `role="menu"` surface.
+ * @fires {CustomEvent} cyber-open - The menu opened.
+ * @fires {CustomEvent} cyber-close - The menu closed.
+ * @fires {CustomEvent<{ item: HTMLElement }>} cyber-select - A menu item was
+ *   chosen; the menu closes right after.
  *
  * @example
  * <cyber-dropdown>
@@ -70,7 +75,9 @@ export class CyberDropdown extends LitElement {
         color: var(--cyber-text);
         text-decoration: none;
         cursor: pointer;
-        transition: background 0.1s ease, color 0.1s ease;
+        transition:
+          background 0.1s ease,
+          color 0.1s ease;
       }
 
       ::slotted([role='menuitem']:hover),
@@ -110,7 +117,8 @@ export class CyberDropdown extends LitElement {
       this.renderRoot.querySelector<HTMLSlotElement>('slot:not([name])');
     return (slot?.assignedElements() ?? []).filter(
       (el): el is HTMLElement =>
-        el instanceof HTMLElement && el.getAttribute('aria-disabled') !== 'true',
+        el instanceof HTMLElement &&
+        el.getAttribute('aria-disabled') !== 'true',
     );
   }
 
@@ -171,7 +179,8 @@ export class CyberDropdown extends LitElement {
   }
 
   private onTriggerClick = () => {
-    this.open ? this.hide() : this.show();
+    if (this.open) this.hide();
+    else this.show();
   };
 
   private onMenuClick = (event: Event) => {

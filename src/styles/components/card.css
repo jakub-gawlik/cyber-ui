@@ -22,7 +22,8 @@
     0 var(--cyber-clip)
   );
   /* diagonal accent lines along the two clipped corners */
-  background-image: linear-gradient(
+  background-image:
+    linear-gradient(
       135deg,
       transparent calc(50% - 1px),
       var(--cyber-border) calc(50% - 1px),
@@ -39,20 +40,28 @@
   background-repeat: no-repeat;
   /* each tile's anti-diagonal coincides with a cut edge, drawing its border */
   background-size: var(--cyber-clip) var(--cyber-clip);
-  background-position: top left, bottom right;
+  background-position:
+    top left,
+    bottom right;
   box-shadow: inset 0 0 0 transparent;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .cyber-card:hover {
   border-color: var(--cyber-border);
-  box-shadow: inset 0 0 24px color-mix(in srgb, var(--cyber-primary) 10%, transparent);
+  box-shadow: inset 0 0 24px
+    color-mix(in srgb, var(--cyber-primary) 10%, transparent);
 }
 
 /* lift + media zoom — real-pointer devices only, so touch never sticks */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .cyber-card {
-    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.25s ease;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.25s ease;
   }
 
   .cyber-card:hover {
@@ -94,7 +103,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
+  background:
+    linear-gradient(
       to top,
       color-mix(in srgb, var(--cyber-surface) 65%, transparent),
       transparent 55%

@@ -4,6 +4,11 @@
  * Importing this module registers every <cyber-*> element. The global
  * stylesheet (tokens + CSS-class components) builds to cyber-ui.css —
  * import it via `@jgawlik/cyber-ui/styles.css`.
+ *
+ * À la carte: each element is also its own entry point
+ * (`@jgawlik/cyber-ui/modal`, `…/tabs`, …) and each stylesheet its own
+ * file (`@jgawlik/cyber-ui/styles/tokens.css`, `…/styles/button.css`, …);
+ * elements need at least `styles/tokens.css` for their design tokens.
  */
 import './styles/index.css';
 
