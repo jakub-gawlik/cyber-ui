@@ -6,6 +6,8 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-17
+
 ### Added
 
 - **Form elements** — form-associated custom elements (`ElementInternals`)
