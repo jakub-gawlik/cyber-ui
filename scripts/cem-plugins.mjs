@@ -6,17 +6,18 @@ import { dirname } from 'node:path';
 /**
  * The analyzer also records `dispatchEvent(new CustomEvent(name))` calls
  * whose name is a variable (e.g. the dropdown's emit() helper) as an event
- * literally called "name". Every real event is a `cyber-*` literal, documented
- * with `@fires`, so keep only those.
+ * literally called "name". Real events are `cyber-*` literals or are
+ * documented with `@fires` (the form elements' native-style `input` /
+ * `change`), so keep only those.
  */
-export function cyberEventsOnly() {
+export function documentedEventsOnly() {
   return {
-    name: 'cyber-events-only',
+    name: 'documented-events-only',
     packageLinkPhase({ customElementsManifest }) {
       for (const declaration of declarations(customElementsManifest)) {
         if (!declaration.events) continue;
-        declaration.events = declaration.events.filter((event) =>
-          event.name?.startsWith('cyber-'),
+        declaration.events = declaration.events.filter(
+          (event) => event.name?.startsWith('cyber-') || event.description,
         );
       }
     },
@@ -140,9 +141,14 @@ function exportedNames(manifest) {
 }
 
 function shape(element, exported, imports) {
+  // settable public properties only: frameworks assign props as properties,
+  // and assigning a getter-only one (form, validity, …) throws
   const fields = (element.members ?? []).filter(
     (m) =>
-      m.kind === 'field' && !m.static && !m.privacy?.match(/private|protected/),
+      m.kind === 'field' &&
+      !m.static &&
+      !m.readonly &&
+      !m.privacy?.match(/private|protected/),
   );
   const fieldNames = new Set(fields.map((f) => f.name));
   // attributes spelled differently from their property (no-light-dismiss),

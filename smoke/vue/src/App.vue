@@ -19,6 +19,7 @@ const modalOpen = ref(false);
 const closeCount = ref(0);
 const callsign = ref('ISS Aurora');
 const hull = ref(72);
+const shields = ref(false);
 const hullStyle = computed(() => `--cyber-progress: ${hull.value}%`);
 
 function onModalClose() {
@@ -105,6 +106,20 @@ function notify(event) {
       cyber-close events received:
       <span class="cyber-terminal" data-test="close-count">{{
         closeCount
+      }}</span>
+    </p>
+
+    <!-- form-associated element: :checked prop + native change event -->
+    <cyber-checkbox
+      name="shields"
+      :checked="shields"
+      @change="shields = $event.target.checked"
+      >Raise shields</cyber-checkbox
+    >
+    <p class="cyber-text cyber-text--dim">
+      Shields:
+      <span class="cyber-terminal" data-test="shields">{{
+        shields ? 'up' : 'down'
       }}</span>
     </p>
   </main>

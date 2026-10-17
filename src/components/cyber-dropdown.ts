@@ -1,6 +1,7 @@
 import { LitElement, html, css, unsafeCSS, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { DismissController } from './internal/dismiss.js';
+import { Typeahead } from './internal/typeahead.js';
 import dropdownStyles from '../styles/components/dropdown.css?inline';
 
 /**
@@ -100,9 +101,7 @@ export class CyberDropdown extends LitElement {
 
   private trigger: HTMLElement | null = null;
 
-  /** typeahead buffer, cleared after a pause in typing */
-  private typed = '';
-  private typedTimer = 0;
+  private typeahead = new Typeahead();
 
   constructor() {
     super();
@@ -145,7 +144,7 @@ export class CyberDropdown extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.clearTimeout(this.typedTimer);
+    this.typeahead.dispose();
   }
 
   private syncTrigger() {
@@ -212,42 +211,17 @@ export class CyberDropdown extends LitElement {
         this.hide();
         break;
       default:
-        next = this.typeahead(event, items, current);
+        next = this.typeahead.match(
+          event,
+          items.map((item) => item.textContent ?? ''),
+          current,
+        );
     }
     if (next !== null) {
       event.preventDefault();
       items[next]?.focus();
     }
   };
-
-  /** Index of the item matching the typed prefix, or null. */
-  private typeahead(
-    event: KeyboardEvent,
-    items: HTMLElement[],
-    current: number,
-  ): number | null {
-    const { key } = event;
-    if (key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) {
-      return null;
-    }
-    // a leading space activates the focused item; don't swallow it
-    if (key === ' ' && !this.typed) return null;
-    this.typed += key.toLowerCase();
-    window.clearTimeout(this.typedTimer);
-    this.typedTimer = window.setTimeout(() => (this.typed = ''), 500);
-
-    // repeating one character cycles through items starting with it;
-    // otherwise keep matching the whole prefix from the current item
-    const repeated = [...this.typed].every((c) => c === this.typed[0]);
-    const prefix = repeated ? this.typed[0] : this.typed;
-    const start = repeated ? current + 1 : Math.max(current, 0);
-    for (let i = 0; i < items.length; i++) {
-      const index = (start + i) % items.length;
-      const text = items[index].textContent?.trim().toLowerCase() ?? '';
-      if (text.startsWith(prefix)) return index;
-    }
-    return null;
-  }
 
   render() {
     return html`

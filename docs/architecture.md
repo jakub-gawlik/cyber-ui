@@ -6,7 +6,8 @@
 src/
   index.ts                    # all-in-one entry: imports styles/index.css, exports + registers all elements
   components/                 # Lit elements (one file per element pair; each is also its own entry point)
-    internal/                 # shared helpers: slots.ts (slotHasContent), dismiss.ts (DismissController)
+    internal/                 # shared helpers: slots.ts, dismiss.ts (DismissController), typeahead.ts,
+                              #   form-control.ts / text-control.ts / toggle-control.ts (form element bases)
   styles/
     index.css                 # global stylesheet entry (@import … layer()) → builds to dist/cyber-ui.css
     tokens.css                # base + derived design tokens
@@ -98,7 +99,9 @@ All elements are Lit 3, defined with `@customElement`, exported from
   as these tags.
 
 - Events: `cyber-*` named `CustomEvent`s, always
-  `{ bubbles: true, composed: true }`.
+  `{ bubbles: true, composed: true }`. Exception: form elements fire the
+  native-style `input` and `change` events (see Form elements), because
+  that is what form libraries and framework bindings listen for.
 - Public state is a reflected attribute/property (`open`, `selected`) plus
   imperative methods (`show()`/`close()`/`toggle()`).
 - Expose `part` attributes on the significant shadow nodes.
@@ -121,10 +124,68 @@ All elements are Lit 3, defined with `@customElement`, exported from
   Attributes on the consumer's own slotted element (the dropdown trigger's
   `aria-haspopup`/`aria-expanded`) are set on `slotchange`.
 
+### Form elements
+
+`<cyber-input>`, `<cyber-textarea>`, `<cyber-checkbox>`, `<cyber-switch>`,
+`<cyber-radio-group>`, `<cyber-slider>` and `<cyber-select>` are
+form-associated custom elements (`static formAssociated = true` +
+`ElementInternals`), built on `internal/form-control.ts`:
+
+- **Wrap a native control, mirror it.** Every element except the select
+  renders a real `<input>` / `<textarea>` in its shadow root, styled by the
+  existing class skin. Keyboard, IME, autofill, `indeterminate`, constraint
+  validation and the browser's localized messages come from the platform.
+  `FormControl` mirrors the control's value (`setFormValue`) and validity
+  (`setValidity`, copying the native flags and message, anchored on the
+  control) to `ElementInternals`. The inner controls can't join the outer
+  form: they live in another tree, so only the host is submitted.
+- **Native value semantics.** The `value` / `checked` attribute is the default
+  (`defaultValue` / `defaultChecked`), the property is the live value, and a
+  property write detaches it ("dirty"). Form reset (`formResetCallback`)
+  returns to the default, and `formStateRestoreCallback` restores the
+  `setFormValue` state. Setters and reset push to the inner control and call
+  `commit()` **synchronously**, so `FormData` and `validity` are current
+  right after `el.value = …`, like a native control. `updated()` commits too.
+- **Disabled.** Effective disabled is the `disabled` attribute OR an ancestor
+  `<fieldset disabled>` (`formDisabledCallback`); the platform then bars the
+  host from submission and validation.
+- **States.** `:state(invalid)` follows validity, and `:state(user-invalid)`
+  turns on once the user has interacted: a committed change, a failed
+  submit (the host's `invalid` event) or `reportValidity()`. Then the inner
+  control also gets `aria-invalid="true"`, which the skins style. Toggles add
+  `:state(checked)` (+ `indeterminate`), and the select adds `:state(open)`.
+- **Events.** The inner `input` event is composed and leaves the shadow root
+  by itself (retargeted to the host); `change` isn't composed, so
+  `emitChange()` re-dispatches it from the host.
+- **Labels and focus.** `delegatesFocus: true`. Field-style elements
+  (`FieldControl.renderField`) render a `.cyber-field` with an internal
+  `<label for="control">` (or `aria-labelledby` for non-labelable controls)
+  plus help text (`aria-describedby`). A `<label for>` pointing at the host
+  focuses it: the base focuses on any click aimed at the host itself,
+  because Firefox forwards the label's click without focusing. Its text
+  becomes the inner control's `aria-label` (`fallbackLabel`), since IDREFs
+  can't reach into the shadow root. Toggles forward a host click to the
+  native checkbox. `<cyber-input>` implements implicit submission (Enter →
+  default button / `requestSubmit()`), because the inner input has no form
+  owner.
+- **Radio group.** All native radios render in the group's one shadow root,
+  so grouping, Tab stop and arrow keys are the browser's. Each
+  `<cyber-radio>` is assigned (manual slotting, as in tabs) into its
+  radio's `<label>`. Manual assignment applies to every slot in that root,
+  so the group also assigns `label` / `help-text` slot content by hand.
+- **Select.** The native popup can't be styled, so `<cyber-select>` is a
+  custom WAI-ARIA select-only combobox: a `role="combobox"` trigger
+  (`.cyber-select` skin) controls a `role="listbox"` popup (`.cyber-menu`) of
+  light-DOM `<cyber-option role="option">`s, with real focus moved onto the
+  options. Dismissal is `DismissController`, typeahead the shared
+  `Typeahead` (also used by the dropdown). `valueMissing` uses the
+  browser's own message, read from a detached `<select required>` probe.
+- **Slider.** `sanitizeRange()` reproduces the native range's value
+  sanitization (clamp, snap to step with ties up, midpoint default), so
+  `value` reports what the browser shows.
+
 ## Build & scripts
 
-| Script                   | What it does                                                                                       |
-| ------------------------ | -------------------------------------------------------------------------------------------------- |
 | Script                   | What it does                                                                                       |
 | ------------------------ | -------------------------------------------------------------------------------------------------- |
 | `npm run build`          | `vite build` (JS entries + CSS) → `tsc --emitDeclarationOnly` (`.d.ts`) → `cem analyze` (manifest) |
@@ -148,14 +209,15 @@ entry. `lit` and `lit/*` are **external** (lit stays a `dependency`, so the
 consumer's bundler installs and dedupes one copy). Code shared between
 elements lands in `dist/chunks/`.
 
-| Export                                                                | File                                                                                                    |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `.`                                                                   | `dist/cyber-ui.js` — all elements + `toast()`                                                           |
-| `./accordion`, `./card`, `./dropdown`, `./modal`, `./tabs`, `./toast` | `dist/components/cyber-<name>.js` (+ `.d.ts`)                                                           |
-| `./styles.css`                                                        | `dist/cyber-ui.css` — everything, layered                                                               |
-| `./styles/*.css`                                                      | `dist/styles/<file>.css` — `tokens`, `themes`, `base`, `effects` and every component skin, each layered |
-| `./react`, `./vue`                                                    | types only: `dist/types/react.d.ts`, `dist/types/vue.d.ts`                                              |
-| `./custom-elements.json`                                              | `dist/custom-elements.json`                                                                             |
+| Export                                                                                     | File                                                                                                    |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `.`                                                                                        | `dist/cyber-ui.js` — all elements + `toast()`                                                           |
+| `./accordion`, `./card`, `./dropdown`, `./modal`, `./tabs`, `./toast`                      | `dist/components/cyber-<name>.js` (+ `.d.ts`)                                                           |
+| `./checkbox`, `./input`, `./radio-group`, `./select`, `./slider`, `./switch`, `./textarea` | `dist/components/cyber-<name>.js` (+ `.d.ts`)                                                           |
+| `./styles.css`                                                                             | `dist/cyber-ui.css` — everything, layered                                                               |
+| `./styles/*.css`                                                                           | `dist/styles/<file>.css` — `tokens`, `themes`, `base`, `effects` and every component skin, each layered |
+| `./react`, `./vue`                                                                         | types only: `dist/types/react.d.ts`, `dist/types/vue.d.ts`                                              |
+| `./custom-elements.json`                                                                   | `dist/custom-elements.json`                                                                             |
 
 The component entries register their element when imported, so `sideEffects`
 lists `./dist/components/*.js` alongside `./dist/cyber-ui.js` and CSS. Without
@@ -171,11 +233,12 @@ picked up automatically from `src/components/*.ts`.
 last in `npm run build` and writes into `dist/`:
 
 - `custom-elements.json`: the package's `customElements` field, and the
-  source for the API tables on cyberui.art. Plugins in
-  `scripts/cem-plugins.mjs` drop non-`cyber-*` events (the analyzer would
-  otherwise list the dropdown's `emit(name)` helper as an event called
-  `name`) and rewrite module paths from `src/**/*.ts` to the shipped
-  `dist/**/*.js`.
+  source for the API tables on cyberui.art. The form base classes in
+  `internal/` are analyzed too, so their members are inherited into each
+  element. Plugins in `scripts/cem-plugins.mjs` keep only `cyber-*` events
+  and events documented with `@fires` (the analyzer would otherwise list
+  the dropdown's `emit(name)` helper as an event called `name`), and
+  rewrite module paths from `src/**/*.ts` to the shipped `dist/**/*.js`.
 - `vscode.html-custom-data.json`: VS Code HTML completions (consumers add
   `node_modules/@jgawlik/cyber-ui/dist/vscode.html-custom-data.json` to their
   `html.customData` setting), via `custom-element-vs-code-integration`.
@@ -191,7 +254,12 @@ last in `npm run build` and writes into `dist/`:
 
 Both framework typings take prop types from the element classes
 (`Partial<Pick<CyberModal, 'open' | …>>`), so they can't drift from the
-source, and import any package types an event detail mentions. Consumers opt
+source, and import any package types an event detail mentions. Only
+settable public properties become props: frameworks assign props as
+properties, and assigning a getter-only one (`form`, `validity`, …) throws.
+Members the analyzer should hide need `@internal` on their _declaration_:
+a field assigned only in the constructor is picked up from that assignment
+without its modifiers or tags. Consumers opt
 in with `import type {} from '@jgawlik/cyber-ui/react'` (or `/vue`).
 `tests/types/` holds `@ts-expect-error`-backed type tests for both typings
 and for the per-component entries; they resolve the package through its own
@@ -219,6 +287,19 @@ the WCAG 2.x A/AA rule tags and with `color-contrast` disabled (tests render
 without a themed page background). Real key presses that must trigger
 native activation (Enter/Space on a button) use `userEvent` from
 `vitest/browser`; everything else uses the synthetic `keydown` helper.
+
+Test files run **one at a time per browser** (`fileParallelism: false`):
+`userEvent` sends real keys and clicks to whichever frame has focus, and
+files running in parallel frames stole each other's focus (intermittent
+failures). Keyboard tests assert **parity with native controls** where
+engines differ: WebKit (Safari's default) skips checkboxes and radios on
+Tab, and doesn't wrap radio arrow keys, so `tabReachesNative()` measures
+what the engine does for a native control and the element must match.
+
+Each form element's test file covers value (default, property, user
+input, `FormData`, synchronous updates), validity (native constraints,
+messages, `setCustomValidity`, `:state(user-invalid)`), form reset and
+state restore, fieldset disabling, keyboard behavior, and axe.
 
 When changing an element's behavior, extend its test file in the same change —
 events, keyboard navigation, and open/close state transitions are the contract.

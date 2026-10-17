@@ -4,17 +4,25 @@
 import { customElementVsCodePlugin } from 'custom-element-vs-code-integration';
 import { customElementJetBrainsPlugin } from 'custom-element-jet-brains-integration';
 import {
-  cyberEventsOnly,
+  documentedEventsOnly,
   frameworkTypes,
   publishedPaths,
 } from './scripts/cem-plugins.mjs';
 
 export default {
-  globs: ['src/index.ts', 'src/components/*.ts'],
+  // the form base classes are analyzed too, so their members (name,
+  // disabled, value, …) are inherited into each element's declaration
+  globs: [
+    'src/index.ts',
+    'src/components/*.ts',
+    'src/components/internal/form-control.ts',
+    'src/components/internal/text-control.ts',
+    'src/components/internal/toggle-control.ts',
+  ],
   outdir: 'dist',
   litelement: true,
   plugins: [
-    cyberEventsOnly(),
+    documentedEventsOnly(),
     publishedPaths(),
     // VS Code: point `html.customData` at this file (see docs/architecture.md)
     customElementVsCodePlugin({

@@ -62,6 +62,34 @@
       "types": "./dist/components/cyber-toast.d.ts",
       "import": "./dist/components/cyber-toast.js"
     },
+    "./checkbox": {
+      "types": "./dist/components/cyber-checkbox.d.ts",
+      "import": "./dist/components/cyber-checkbox.js"
+    },
+    "./input": {
+      "types": "./dist/components/cyber-input.d.ts",
+      "import": "./dist/components/cyber-input.js"
+    },
+    "./radio-group": {
+      "types": "./dist/components/cyber-radio-group.d.ts",
+      "import": "./dist/components/cyber-radio-group.js"
+    },
+    "./select": {
+      "types": "./dist/components/cyber-select.d.ts",
+      "import": "./dist/components/cyber-select.js"
+    },
+    "./slider": {
+      "types": "./dist/components/cyber-slider.d.ts",
+      "import": "./dist/components/cyber-slider.js"
+    },
+    "./switch": {
+      "types": "./dist/components/cyber-switch.d.ts",
+      "import": "./dist/components/cyber-switch.js"
+    },
+    "./textarea": {
+      "types": "./dist/components/cyber-textarea.d.ts",
+      "import": "./dist/components/cyber-textarea.js"
+    },
     "./react": {
       "types": "./dist/types/react.d.ts"
     },

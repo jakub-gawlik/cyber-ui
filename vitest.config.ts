@@ -30,8 +30,21 @@ function firefoxProvider() {
 // focus) that DOM emulators don't implement faithfully, and that differs
 // between engines.
 export default defineConfig({
+  // pre-bundle every lit entry the elements import, so discovering one
+  // mid-run doesn't reload the page under a running test
+  optimizeDeps: {
+    include: [
+      'lit',
+      'lit/decorators.js',
+      'lit/directives/if-defined.js',
+      'lit/directives/live.js',
+    ],
+  },
   test: {
     include: ['tests/**/*.test.ts'],
+    // one file at a time per browser: tests press real keys (userEvent),
+    // and files running in parallel frames would steal each other's focus
+    fileParallelism: false,
     browser: {
       enabled: true,
       headless: true,

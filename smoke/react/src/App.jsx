@@ -19,6 +19,7 @@ export default function App() {
   const [closeCount, setCloseCount] = useState(0);
   const [callsign, setCallsign] = useState('ISS Aurora');
   const [hull, setHull] = useState(72);
+  const [submitted, setSubmitted] = useState('');
   const modalRef = useRef(null);
 
   // custom events from web components: listen on the element
@@ -141,6 +142,35 @@ export default function App() {
         cyber-close events received:{' '}
         <span className="cyber-terminal" data-test="close-count">
           {closeCount}
+        </span>
+      </p>
+
+      {/* form-associated elements: native <form> submission + validation */}
+      <form
+        style={{ display: 'grid', gap: '1rem', maxWidth: '20rem' }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setSubmitted(
+            JSON.stringify(Object.fromEntries(new FormData(e.target))),
+          );
+        }}
+      >
+        <cyber-input name="pilot" label="Pilot" required minlength={3} />
+        <cyber-select
+          name="sector"
+          label="Sector"
+          placeholder="Choose"
+          required
+        >
+          <cyber-option value="kepler">Kepler Belt</cyber-option>
+          <cyber-option value="orion">Orion Reach</cyber-option>
+        </cyber-select>
+        <button className="cyber-btn cyber-btn--primary">Launch</button>
+      </form>
+      <p className="cyber-text cyber-text--dim">
+        Submitted:{' '}
+        <span className="cyber-terminal" data-test="submitted">
+          {submitted}
         </span>
       </p>
     </main>

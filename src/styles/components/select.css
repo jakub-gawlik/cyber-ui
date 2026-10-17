@@ -1,5 +1,9 @@
 /* ==========================================================================
-   .cyber-select — styled native <select> with a custom chevron.
+   .cyber-select — styled native <select> with a custom chevron. Also the
+   trigger of <cyber-select> (a role="combobox" element), where the popup
+   is a .cyber-menu listbox.
+   States: :disabled or aria-disabled="true"; :user-invalid or
+   aria-invalid="true" → danger border.
    ========================================================================== */
 
 .cyber-select {
@@ -39,9 +43,16 @@
   box-shadow: 0 0 8px var(--cyber-glow-color);
 }
 
-.cyber-select:disabled {
+.cyber-select:disabled,
+.cyber-select[aria-disabled="true"] {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.cyber-select:user-invalid,
+.cyber-select[aria-invalid="true"] {
+  border-color: var(--cyber-danger);
+  border-left-color: var(--cyber-danger);
 }
 
 /* dropdown list rendering is mostly OS-controlled; keep options legible */

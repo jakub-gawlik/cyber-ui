@@ -8,6 +8,29 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ### Added
 
+- **Form elements** — form-associated custom elements (`ElementInternals`)
+  that take part in `<form>` submission, constraint validation (with the
+  browser's own messages), form reset, `<fieldset disabled>` and state
+  restore like native controls, and expose `:state(invalid)` /
+  `:state(user-invalid)`. They fire native-style `input` and `change`
+  events. Each also has its own entry point:
+  - `<cyber-input>` (`/input`) and `<cyber-textarea>` (`/textarea`): native
+    text controls with `label`, `help-text`, `required`, `minlength`,
+    `maxlength`, `pattern`, `type`, …; Enter submits the form.
+  - `<cyber-checkbox>` (`/checkbox`) with `indeterminate`, and the new
+    `<cyber-switch>` (`/switch`); both expose `:state(checked)`.
+  - `<cyber-radio-group>` + `<cyber-radio>` (`/radio-group`): native radio
+    grouping and arrow keys.
+  - New `<cyber-slider>` (`/slider`): native range input with a value
+    readout.
+  - `<cyber-select>` + `<cyber-option>` (`/select`): a styled listbox
+    replacing the native select (WAI-ARIA select-only combobox: keyboard,
+    typeahead, `placeholder`, `:state(open)`).
+- CSS core: `.cyber-switch` and `.cyber-slider` skins (also usable
+  class-only), plus `.cyber-field__head`, `.cyber-field__label` and
+  `.cyber-field__help` on the field stack, and `aria-invalid="true"` /
+  `aria-disabled="true"` states on `.cyber-input` / `.cyber-select`.
+
 - Per-component entry points: `@jgawlik/cyber-ui/accordion`, `/card`,
   `/dropdown`, `/modal`, `/tabs`, `/toast` — import only the elements you
   use. The all-in-one `@jgawlik/cyber-ui` entry is unchanged.

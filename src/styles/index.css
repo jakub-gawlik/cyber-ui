@@ -20,6 +20,8 @@
 @import "./components/select.css" layer(cyber-ui.components);
 @import "./components/checkbox.css" layer(cyber-ui.components);
 @import "./components/radio.css" layer(cyber-ui.components);
+@import "./components/switch.css" layer(cyber-ui.components);
+@import "./components/slider.css" layer(cyber-ui.components);
 @import "./components/modal.css" layer(cyber-ui.components);
 @import "./components/tabs.css" layer(cyber-ui.components);
 @import "./components/dropdown.css" layer(cyber-ui.components);

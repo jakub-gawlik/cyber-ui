@@ -63,3 +63,33 @@ export async function expectAccessible(context: Element = document.body) {
   );
   expect(summary).toEqual([]);
 }
+
+/** Mount `inner` inside a <form> and return both. */
+export function formFixture<T extends Element>(
+  inner: string,
+): { form: HTMLFormElement; control: T } {
+  const form = fixture<HTMLFormElement>(`<form>${inner}</form>`);
+  return { form, control: form.firstElementChild as T };
+}
+
+/**
+ * Whether Tab reaches a native `<input type=…>` in this engine. Safari's
+ * default (and Playwright's WebKit) tabs only to text fields, skipping
+ * checkboxes and radios, so keyboard tests assert parity with native.
+ */
+export async function tabReachesNative(type: string): Promise<boolean> {
+  const { userEvent } = await import('vitest/browser');
+  const host = fixture<HTMLDivElement>(
+    `<div><input data-from><input data-to type="${type}"></div>`,
+  );
+  host.querySelector<HTMLInputElement>('[data-from]')!.focus();
+  await userEvent.keyboard('{Tab}');
+  const reached = document.activeElement === host.querySelector('[data-to]');
+  host.remove();
+  return reached;
+}
+
+/** `:state(name)` support check + match, so failures read clearly. */
+export function hasState(el: Element, name: string): boolean {
+  return el.matches(`:state(${name})`);
+}

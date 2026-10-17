@@ -1,0 +1,86 @@
+/* ==========================================================================
+   .cyber-switch — on/off switch: a native checkbox restyled as an angular
+   track with a sliding thumb; keyboard and focus behavior stay native.
+   Used by <cyber-switch> internally and usable class-only:
+   <label class="cyber-switch">
+     <input type="checkbox" role="switch"> <span>Cloaking device</span>
+   </label>
+   States: :checked (thumb right, lit track), :disabled.
+   ========================================================================== */
+
+.cyber-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cyber-space-2);
+  font-family: var(--cyber-font-body);
+  color: var(--cyber-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cyber-switch input[type="checkbox"] {
+  appearance: none;
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  width: 2.5em;
+  height: 1.3em;
+  flex: none;
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  background: var(--cyber-tint);
+  clip-path: polygon(
+    4px 0,
+    100% 0,
+    100% calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    0 100%,
+    0 4px
+  );
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* the thumb */
+.cyber-switch input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.3em - 6px);
+  height: calc(1.3em - 6px);
+  background: var(--cyber-text-dim);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.cyber-switch input[type="checkbox"]:checked {
+  border-color: var(--cyber-primary);
+  background: color-mix(in srgb, var(--cyber-primary) 22%, transparent);
+  box-shadow: inset 0 0 8px
+    color-mix(in srgb, var(--cyber-primary) 20%, transparent);
+}
+
+.cyber-switch input[type="checkbox"]:checked::before {
+  transform: translateX(1.2em);
+  background: var(--cyber-primary);
+  box-shadow: 0 0 6px var(--cyber-glow-color);
+}
+
+.cyber-switch input[type="checkbox"]:focus-visible {
+  outline: 1px solid var(--cyber-primary);
+  outline-offset: 2px;
+}
+
+.cyber-switch input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cyber-switch:hover input[type="checkbox"]:not(:disabled) {
+  border-color: var(--cyber-primary);
+}

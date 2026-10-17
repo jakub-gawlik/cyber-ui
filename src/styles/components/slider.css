@@ -1,0 +1,82 @@
+/* ==========================================================================
+   .cyber-slider — native <input type="range"> with a thin glowing track and
+   an angular thumb; keyboard and pointer behavior stay native. Used by
+   <cyber-slider> internally and usable class-only:
+   <input type="range" class="cyber-slider" style="--cyber-slider-fill: 40%">
+
+   Knobs: --cyber-slider-fill — filled share of the track in WebKit/Blink
+   (set it to the value's percentage; Firefox fills natively via
+   ::-moz-range-progress and ignores it).
+   States: :focus-visible, :disabled.
+
+   WebKit and Gecko pseudo-elements live in separate rules on purpose: one
+   unknown selector in a list invalidates the whole rule.
+   ========================================================================== */
+
+.cyber-slider {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 1.4em;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cyber-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--cyber-primary) var(--cyber-slider-fill, 0%),
+    var(--cyber-border-dim) var(--cyber-slider-fill, 0%)
+  );
+}
+
+.cyber-slider::-moz-range-track {
+  height: 4px;
+  background: var(--cyber-border-dim);
+}
+
+.cyber-slider::-moz-range-progress {
+  height: 4px;
+  background: var(--cyber-primary);
+}
+
+.cyber-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.7em;
+  height: 1.3em;
+  margin-top: calc(2px - 0.65em);
+  border: 0;
+  background: var(--cyber-primary);
+  box-shadow: 0 0 8px var(--cyber-glow-color);
+  transition: box-shadow 0.15s ease;
+}
+
+.cyber-slider::-moz-range-thumb {
+  width: 0.7em;
+  height: 1.3em;
+  border: 0;
+  border-radius: 0;
+  background: var(--cyber-primary);
+  box-shadow: 0 0 8px var(--cyber-glow-color);
+  transition: box-shadow 0.15s ease;
+}
+
+.cyber-slider:hover:not(:disabled)::-webkit-slider-thumb {
+  box-shadow: var(--cyber-glow-strong);
+}
+
+.cyber-slider:hover:not(:disabled)::-moz-range-thumb {
+  box-shadow: var(--cyber-glow-strong);
+}
+
+.cyber-slider:focus-visible {
+  outline: 1px solid var(--cyber-primary);
+  outline-offset: 4px;
+}
+
+.cyber-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

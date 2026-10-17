@@ -24,6 +24,30 @@ export const ok = (
       position="bottom-left"
       oncyber-toast-dismiss={(event) => event.detail.reason === 'timeout'}
     />
+    <form>
+      <cyber-input
+        name="callsign"
+        label="Callsign"
+        type="email"
+        required
+        minlength={3}
+        help-text="Visible to allies"
+        oninput={(event) => event.target}
+        onchange={(event) => event.type}
+      />
+      <cyber-textarea name="log" rows={6} value="Day 1" />
+      <cyber-checkbox name="shields" checked indeterminate>
+        Shields
+      </cyber-checkbox>
+      <cyber-switch name="cloak" defaultChecked />
+      <cyber-radio-group name="faction" value="union" orientation="horizontal">
+        <cyber-radio value="union">Union</cyber-radio>
+      </cyber-radio-group>
+      <cyber-slider name="power" min={0} max={100} step={5} value={60} />
+      <cyber-select name="sector" placeholder="Choose" open={false}>
+        <cyber-option value="kepler">Kepler</cyber-option>
+      </cyber-select>
+    </form>
     <cyber-card
       ref={(card) => {
         card?.shadowRoot?.querySelector('[part="card"]');
@@ -40,3 +64,9 @@ export const badUnion = <cyber-tabs orientation="diagonal" />;
 export const badDetail = <cyber-modal oncyber-close={(e) => e.detail.index} />;
 // @ts-expect-error — not a position
 export const badAttr = <cyber-toaster position="center" />;
+// @ts-expect-error — not an input type
+export const badType = <cyber-input type="color" />;
+// @ts-expect-error — the slider's value is a number
+export const badSlider = <cyber-slider value="60" />;
+// @ts-expect-error — validity is read-only, so it isn't a prop
+export const badReadonly = <cyber-select validity={undefined} />;
