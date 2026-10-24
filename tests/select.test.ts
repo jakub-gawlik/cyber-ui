@@ -2,6 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import type { CyberOption, CyberSelect } from '../src/index.js';
 import {
+  setAnchoringMode,
+  usesAnchoredPopovers,
+} from '../src/components/internal/anchor.js';
+import {
   captureEvents,
   cleanupFixtures,
   expectAccessible,
@@ -44,7 +48,10 @@ async function opened(attrs = '') {
 }
 
 describe('<cyber-select>', () => {
-  afterEach(cleanupFixtures);
+  afterEach(() => {
+    cleanupFixtures();
+    setAnchoringMode('auto');
+  });
 
   describe('value', () => {
     it('defaults to the first enabled option, like a native select', async () => {
@@ -310,6 +317,41 @@ describe('<cyber-select>', () => {
       optionsOf(select).every((o) => o.getAttribute('role') === 'option'),
     ).toBe(true);
     expect(optionsOf(select)[2].getAttribute('aria-disabled')).toBe('true');
+  });
+
+  describe('positioning', () => {
+    it.skipIf(!usesAnchoredPopovers())(
+      'renders the listbox as a top-layer popover as wide as the trigger',
+      async () => {
+        const { select } = await opened();
+        const listbox = listboxOf(select);
+        expect(listbox.getAttribute('popover')).toBe('manual');
+        expect(listbox.matches(':popover-open')).toBe(true);
+        const trigger = triggerOf(select).getBoundingClientRect();
+        const rect = listbox.getBoundingClientRect();
+        expect(rect.top).toBeGreaterThanOrEqual(trigger.bottom);
+        expect(Math.round(rect.width)).toBe(Math.round(trigger.width));
+        expect(Math.round(rect.left)).toBe(Math.round(trigger.left));
+      },
+    );
+
+    it('falls back to absolute positioning and flips above when out of room', async () => {
+      setAnchoringMode('legacy');
+      const select = fixture<HTMLElement>(
+        `<div style="position: fixed; bottom: 0; left: 0; width: 240px">${markup()}</div>`,
+      ).querySelector<CyberSelect>('cyber-select')!;
+      await select.updateComplete;
+      select.show();
+      await select.updateComplete;
+      const listbox = listboxOf(select);
+      expect(listbox.hasAttribute('popover')).toBe(false);
+      expect(getComputedStyle(listbox).position).toBe('absolute');
+      expect(listbox.dataset.placement).toBe('top-start');
+      const trigger = triggerOf(select).getBoundingClientRect();
+      const rect = listbox.getBoundingClientRect();
+      expect(rect.bottom).toBeLessThanOrEqual(trigger.top);
+      expect(Math.round(rect.width)).toBe(Math.round(trigger.width));
+    });
   });
 
   it('has no axe violations, closed and open', async () => {

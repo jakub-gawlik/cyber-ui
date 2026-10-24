@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CyberDropdown } from '../src/index.js';
 import {
+  setAnchoringMode,
+  usesAnchoredPopovers,
+} from '../src/components/internal/anchor.js';
+import {
   captureEvents,
   cleanupFixtures,
   expectAccessible,
@@ -27,7 +31,11 @@ const triggerOf = (dd: CyberDropdown) =>
   dd.querySelector<HTMLButtonElement>('[slot="trigger"]')!;
 
 async function opened(html = markup): Promise<CyberDropdown> {
-  const dd = fixture<CyberDropdown>(html);
+  const mounted = fixture<HTMLElement>(html);
+  const dd =
+    mounted instanceof HTMLElement && mounted.matches('cyber-dropdown')
+      ? (mounted as CyberDropdown)
+      : mounted.querySelector<CyberDropdown>('cyber-dropdown')!;
   await dd.updateComplete;
   triggerOf(dd).click();
   await vi.waitFor(() => expect(document.activeElement).toBe(itemsOf(dd)[0]));
@@ -35,7 +43,10 @@ async function opened(html = markup): Promise<CyberDropdown> {
 }
 
 describe('<cyber-dropdown>', () => {
-  afterEach(cleanupFixtures);
+  afterEach(() => {
+    cleanupFixtures();
+    setAnchoringMode('auto');
+  });
 
   it('opens from the trigger, emits cyber-open, and focuses the first item', async () => {
     const dd = fixture<CyberDropdown>(markup);
@@ -360,6 +371,68 @@ describe('<cyber-dropdown>', () => {
       } finally {
         dialog.close();
       }
+    });
+  });
+
+  describe('positioning', () => {
+    it.skipIf(!usesAnchoredPopovers())(
+      'renders the menu as a top-layer popover anchored below the trigger',
+      async () => {
+        const dd = await opened();
+        const menu = menuOf(dd);
+        expect(menu.getAttribute('popover')).toBe('manual');
+        expect(menu.matches(':popover-open')).toBe(true);
+        expect(menu.dataset.placement).toBe('bottom-start');
+        const trigger = triggerOf(dd).getBoundingClientRect();
+        const rect = menu.getBoundingClientRect();
+        expect(rect.top).toBeGreaterThanOrEqual(trigger.bottom);
+        expect(Math.round(rect.left)).toBe(Math.round(trigger.left));
+
+        dd.hide();
+        await dd.updateComplete;
+        expect(menu.matches(':popover-open')).toBe(false);
+      },
+    );
+
+    it.skipIf(!usesAnchoredPopovers())(
+      'escapes an overflow: hidden ancestor in the top layer',
+      async () => {
+        const dd = await opened(
+          `<div style="overflow: hidden; height: 20px">${markup}</div>`,
+        );
+        const rect = menuOf(dd).getBoundingClientRect();
+        expect(rect.height).toBeGreaterThan(0);
+        // the clipped wrapper is 20px tall; the menu is laid out beyond it
+        expect(rect.bottom).toBeGreaterThan(20);
+      },
+    );
+
+    it('falls back to absolute positioning and flips above when out of room', async () => {
+      setAnchoringMode('legacy');
+      const dd = await opened(
+        `<div style="position: fixed; bottom: 0; left: 0">${markup}</div>`,
+      );
+      const menu = menuOf(dd);
+      expect(menu.hasAttribute('popover')).toBe(false);
+      expect(getComputedStyle(menu).position).toBe('absolute');
+      expect(menu.dataset.placement).toBe('top-start');
+      expect(menu.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        triggerOf(dd).getBoundingClientRect().top,
+      );
+    });
+
+    it('honors `placement`', async () => {
+      setAnchoringMode('legacy');
+      const dd = await opened(
+        `<div style="position: fixed; top: 200px; left: 0">${markup.replace(
+          '<cyber-dropdown>',
+          '<cyber-dropdown placement="bottom-end">',
+        )}</div>`,
+      );
+      expect(menuOf(dd).dataset.placement).toBe('bottom-end');
+      expect(Math.round(menuOf(dd).getBoundingClientRect().right)).toBe(
+        Math.round(triggerOf(dd).getBoundingClientRect().right),
+      );
     });
   });
 

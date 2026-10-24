@@ -10,6 +10,10 @@
    </div>
    Variants: --striped (animated), --segmented, --accent, --warning,
    --danger, --success. Segment count: --cyber-progress-segments (default 8).
+   --indeterminate: a sweeping bar for unknown progress (drop aria-valuenow).
+   The same markup with role="meter" (plus a color variant for the range
+   the value falls in) is a meter; <cyber-progress> and <cyber-meter>
+   render exactly this.
    ========================================================================== */
 
 .cyber-progress {
@@ -112,6 +116,28 @@
     background-position:
       17px 0,
       0 0;
+  }
+}
+
+/* -- indeterminate: a sweeping bar ----------------------------------------- */
+.cyber-progress--indeterminate .cyber-progress__bar {
+  width: 40%;
+  opacity: 0.8;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-progress--indeterminate .cyber-progress__bar {
+    animation: cyber-progress-sweep 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes cyber-progress-sweep {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 250% 0;
   }
 }
 

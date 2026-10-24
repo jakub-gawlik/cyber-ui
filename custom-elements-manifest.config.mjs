@@ -18,6 +18,7 @@ export default {
     'src/components/internal/form-control.ts',
     'src/components/internal/text-control.ts',
     'src/components/internal/toggle-control.ts',
+    'src/components/internal/bar.ts',
   ],
   outdir: 'dist',
   litelement: true,

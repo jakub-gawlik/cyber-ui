@@ -7,6 +7,8 @@ src/
   index.ts                    # all-in-one entry: imports styles/index.css, exports + registers all elements
   components/                 # Lit elements (one file per element pair; each is also its own entry point)
     internal/                 # shared helpers: slots.ts, dismiss.ts (DismissController), typeahead.ts,
+                              #   anchor.ts (AnchorController + floatingStyles: anchored panels),
+                              #   bar.ts (BarElement: progress/meter base),
                               #   form-control.ts / text-control.ts / toggle-control.ts (form element bases)
   styles/
     index.css                 # global stylesheet entry (@import … layer()) → builds to dist/cyber-ui.css
@@ -120,8 +122,51 @@ All elements are Lit 3, defined with `@customElement`, exported from
   each slotted panel in a shadow `role="tabpanel"` region via manual slot
   assignment (`slotAssignment: 'manual'` + `slot.assign()`, children
   tracked with a `MutationObserver`), leaving the consumer's DOM untouched.
+  `<cyber-command>` does the same for its `<cyber-command-item>`s: each
+  visible item is assigned into its own shadow `role="option"` row, so the
+  search input's `aria-activedescendant` / `aria-controls` stay in one
+  tree, and filtering just leaves non-matching items unassigned (an
+  unassigned child of a manual-assignment root doesn't render).
   Attributes on the consumer's own slotted element (the dropdown trigger's
-  `aria-haspopup`/`aria-expanded`) are set on `slotchange`.
+  `aria-haspopup`/`aria-expanded`) are set on `slotchange`. Where no
+  reference is possible at all — the tooltip bubble describing a slotted
+  trigger — the bubble is a `role="tooltip"` `aria-live` region instead of
+  an `aria-describedby` target.
+
+### Anchored panels
+
+`<cyber-dropdown>`, `<cyber-select>`, `<cyber-tooltip>` and
+`<cyber-popover>` position a floating panel next to a trigger through
+`internal/anchor.ts` (`AnchorController` + `floatingStyles`):
+
+- **Modern path** (`usesAnchoredPopovers()`: the Popover API _and_ CSS
+  anchor positioning — `position-area`, `position-try-fallbacks` — are
+  supported; true in current Chromium, Firefox and WebKit): the panel gets
+  `popover="manual"` and is shown with `showPopover()`, so it renders in
+  the top layer and escapes `overflow` clipping and stacking contexts. The
+  trigger's `.cyber-anchor` wrapper carries `anchor-name`, the panel
+  `position-anchor` + a `position-area` per `data-placement`, and
+  `position-try-fallbacks: flip-block, flip-inline, …` flips it when it
+  would overflow — no JS measurement. Both ends live in the same shadow
+  root: anchor names are tree-scoped, which is why the trigger slot is
+  wrapped instead of naming the host or the slotted element. `:where()`
+  resets the UA popover styles at zero specificity so the component skin
+  wins regardless of order. Dismissal stays `manual` + `DismissController`
+  (not `popover="auto"`), so Escape scoping and outside-click behave like
+  before and the same for both paths.
+- **Legacy path**: no `popover` attribute; the panel is `position:
+absolute` inside the host (`floatingStyles` maps `data-placement` to
+  insets) and `flipIfNeeded()` measures it after each update, moving it to
+  the opposite side when it overflows the viewport and the other side has
+  more room. Tests force this path with `setAnchoringMode('legacy')` so
+  both paths are covered in every engine.
+- The panel must come **after** the anchor in the shadow DOM (an anchor
+  has to precede the element it positions), carry class `cyber-floating`,
+  and be toggled with `hidden` by the host; the controller does the rest in
+  `hostUpdated`. `--cyber-floating-gap` is the anchor/panel distance.
+- Focus inside a top-layer popover doesn't propagate `:focus-within` to the
+  host in every engine, so `DismissController` locates the overlay holding
+  focus through the shadow-aware active element.
 
 ### Form elements
 
@@ -212,6 +257,7 @@ elements lands in `dist/chunks/`.
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
 | `.`                                                                                        | `dist/cyber-ui.js` — all elements + `toast()`                                                           |
 | `./accordion`, `./card`, `./dropdown`, `./modal`, `./tabs`, `./toast`                      | `dist/components/cyber-<name>.js` (+ `.d.ts`)                                                           |
+| `./tooltip`, `./popover`, `./progress`, `./meter`, `./spinner`, `./skeleton`, `./command`  | `dist/components/cyber-<name>.js` (+ `.d.ts`)                                                           |
 | `./checkbox`, `./input`, `./radio-group`, `./select`, `./slider`, `./switch`, `./textarea` | `dist/components/cyber-<name>.js` (+ `.d.ts`)                                                           |
 | `./styles.css`                                                                             | `dist/cyber-ui.css` — everything, layered                                                               |
 | `./styles/*.css`                                                                           | `dist/styles/<file>.css` — `tokens`, `themes`, `base`, `effects` and every component skin, each layered |
@@ -232,9 +278,9 @@ picked up automatically from `src/components/*.ts`.
 last in `npm run build` and writes into `dist/`:
 
 - `custom-elements.json`: the package's `customElements` field, and the
-  source for the API tables on cyberui.art. The form base classes in
-  `internal/` are analyzed too, so their members are inherited into each
-  element. Plugins in `scripts/cem-plugins.mjs` keep only `cyber-*` events
+  source for the API tables on cyberui.art. The form base classes and
+  `BarElement` in `internal/` are analyzed too, so their members are
+  inherited into each element. Plugins in `scripts/cem-plugins.mjs` keep only `cyber-*` events
   and events documented with `@fires` (the analyzer would otherwise list
   the dropdown's `emit(name)` helper as an event called `name`), and
   rewrite module paths from `src/**/*.ts` to the shipped `dist/**/*.js`.
@@ -300,6 +346,14 @@ input, `FormData`, synchronous updates), validity (native constraints,
 messages, `setCustomValidity`, `:state(user-invalid)`), form reset and
 state restore, fieldset disabling, keyboard behavior, and axe.
 
+Anchored panels (dropdown, select, tooltip, popover) have a `positioning`
+block: the modern top-layer path (skipped where unsupported, via
+`usesAnchoredPopovers()`) and the legacy path forced with
+`setAnchoringMode('legacy')`, each asserting the panel's side relative to
+the trigger from `getBoundingClientRect()`. The command palette's native
+`<dialog>` `close` event is queued as a task, so tests `waitFor` the
+`cyber-close` it produces.
+
 When changing an element's behavior, extend its test file in the same change —
 events, keyboard navigation, and open/close state transitions are the contract.
 
@@ -310,7 +364,8 @@ events, keyboard navigation, and open/close state transitions are the contract.
 - **Dist type tests** (`npm run typecheck:dist`): generated React/Vue typings
   and per-component entry types, resolved through `exports`.
 - **Size budgets** (`npm run size`): all elements with and without lit, a
-  single element, and the global stylesheet. Budgets sit roughly 10–15%
+  single element, the heaviest form element and element, and the global
+  stylesheet. Budgets sit roughly 10–15%
   above the measured sizes; raise them deliberately, never to silence a
   regression such as lit getting bundled again.
 - **Smoke apps** (`smoke/react`, `smoke/vue`): install `smoke/cyber-ui.tgz`

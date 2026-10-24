@@ -4,13 +4,13 @@
     "path": "dist/cyber-ui.js",
     "import": "*",
     "ignore": ["lit"],
-    "limit": "14.5 kB"
+    "limit": "21 kB"
   },
   {
     "name": "all elements + lit",
     "path": "dist/cyber-ui.js",
     "import": "*",
-    "limit": "21 kB"
+    "limit": "27 kB"
   },
   {
     "name": "one element: <cyber-modal> (lit excluded)",
@@ -27,16 +27,23 @@
     "limit": "3.2 kB"
   },
   {
-    "name": "heaviest element: <cyber-select> (lit excluded)",
+    "name": "heaviest form element: <cyber-select> (lit excluded)",
     "path": "dist/components/cyber-select.js",
     "import": "*",
     "ignore": ["lit"],
-    "limit": "5.5 kB"
+    "limit": "6.6 kB"
+  },
+  {
+    "name": "heaviest element: <cyber-command> (lit excluded)",
+    "path": "dist/components/cyber-command.js",
+    "import": "*",
+    "ignore": ["lit"],
+    "limit": "3.9 kB"
   },
   {
     "name": "global stylesheet",
     "path": "dist/cyber-ui.css",
     "rolldown": false,
-    "limit": "6.5 kB"
+    "limit": "7 kB"
   }
 ]

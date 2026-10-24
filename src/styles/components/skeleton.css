@@ -1,0 +1,68 @@
+/* ==========================================================================
+   .cyber-skeleton — loading placeholder block with a shimmer sweep. Pure
+   CSS; mark placeholders aria-hidden and put aria-busy on the region.
+   <div aria-busy="true">
+     <div class="cyber-skeleton cyber-skeleton--text" aria-hidden="true"></div>
+     <div class="cyber-skeleton cyber-skeleton--text" aria-hidden="true"></div>
+     <div class="cyber-skeleton cyber-skeleton--circle" aria-hidden="true"></div>
+   </div>
+   Shapes: (default) a corner-cut rect, --text (a line of text, with its
+   own line spacing), --circle (avatar).
+   Knobs: --cyber-skeleton-height (rect/text height), --cyber-skeleton-size
+   (circle diameter); set width inline as usual.
+   ========================================================================== */
+
+.cyber-skeleton {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--cyber-skeleton-height, 1.2em);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--cyber-primary) 9%, transparent);
+  clip-path: polygon(
+    4px 0,
+    100% 0,
+    100% calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    0 100%,
+    0 4px
+  );
+}
+
+.cyber-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in srgb, var(--cyber-primary) 14%, transparent) 50%,
+    transparent 70%
+  );
+  translate: -100% 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-skeleton::after {
+    animation: cyber-skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes cyber-skeleton-shimmer {
+  to {
+    translate: 100% 0;
+  }
+}
+
+.cyber-skeleton--text {
+  height: var(--cyber-skeleton-height, 0.85em);
+  margin-block: 0.35em;
+}
+
+.cyber-skeleton--circle {
+  width: var(--cyber-skeleton-size, 2.5em);
+  height: var(--cyber-skeleton-size, 2.5em);
+  border-radius: 50%;
+  clip-path: none;
+}

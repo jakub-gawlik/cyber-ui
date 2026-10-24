@@ -6,6 +6,51 @@ All notable changes to cyber-ui are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Anchored overlays** — a shared positioning primitive for floating
+  panels: in engines with the Popover API and CSS anchor positioning
+  (current Chromium, Firefox and Safari) the panel renders in the top layer
+  (so it is never clipped by `overflow` or stacking contexts) and flips by
+  CSS when out of room; elsewhere it falls back to absolute positioning
+  inside the host with the previous JS flip. `<cyber-dropdown>` and
+  `<cyber-select>` now use it; the dropdown gains a `placement` attribute
+  (`bottom-start` by default) and an `anchor` part.
+- `<cyber-tooltip>` (`/tooltip`): hover / focus tooltip (`content`
+  attribute or `content` slot, `placement`, `delay`, `trigger`, `open`,
+  `show()` / `hide()`, `cyber-open` / `cyber-close`). The bubble skin is
+  also available as `.cyber-tooltip__bubble`.
+- `<cyber-popover>` (`/popover`): trigger + anchored `role="dialog"` panel
+  for rich content (`placement`, `label`, `open`, `show()` / `hide()` /
+  `toggle()`, `cyber-open` / `cyber-close`); closes on Escape, outside
+  click or when focus leaves. CSS core: `.cyber-popover` with `__title` /
+  `__body`.
+- `<cyber-progress>` (`/progress`): `role="progressbar"` over the
+  `.cyber-progress` skin — `value` / `max`, `label` (attribute or slot),
+  `variant`, `striped`, `segmented` and `indeterminate` (new
+  `.cyber-progress--indeterminate` sweeping modifier in the CSS core).
+- `<cyber-meter>` (`/meter`): `role="meter"` with native-meter
+  `low` / `high` / `optimum` semantics coloring the bar by region
+  (`state` property).
+- `<cyber-spinner>` (`/spinner`) and `.cyber-spinner` loader (ring +
+  optional caption, `role="status"`, `variant`, `--cyber-spinner-size`).
+- `<cyber-skeleton>` (`/skeleton`) and `.cyber-skeleton` placeholder
+  (`shape="rect|text|circle"`, shimmer sweep, hidden from assistive tech).
+- `<cyber-command>` + `<cyber-command-item>` (`/command`): a command
+  palette — modal search over slotted commands with filtering (label +
+  `keywords`), `group` headings, `shortcut` hints, arrow / Home / End /
+  Enter keyboard navigation, `hotkey` (e.g. `mod+k`), `cyber-open` /
+  `cyber-close` / `cyber-select` (`{ item, value }`). ARIA combobox +
+  listbox entirely inside the shadow root (manual slot assignment). CSS
+  core: `.cyber-command` and its parts.
+
+### Fixed
+
+- Scoped Escape handling now finds the overlay holding focus through the
+  shadow-aware active element instead of `:focus-within`, which engines do
+  not propagate to the host of a focused element shown in a top-layer
+  popover.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added

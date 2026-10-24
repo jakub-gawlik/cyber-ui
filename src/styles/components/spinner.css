@@ -1,0 +1,75 @@
+/* ==========================================================================
+   .cyber-spinner — loading indicator: a rotating ring with an optional
+   label. Pure CSS; give the wrapper role="status" and a name.
+   <div class="cyber-spinner" role="status" aria-label="Loading">
+     <span class="cyber-spinner__ring"></span>
+     <span class="cyber-spinner__label">Decrypting</span>   (optional)
+   </div>
+   Knobs: --cyber-spinner-size (default 1.5em), --cyber-spinner-width (2px).
+   Variants: --accent, --warning, --danger, --success.
+   Reduced motion: the ring still rotates, slowly.
+   ========================================================================== */
+
+.cyber-spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  color: var(--cyber-primary);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.cyber-spinner__ring {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--cyber-spinner-size, 1.5em);
+  height: var(--cyber-spinner-size, 1.5em);
+  border: var(--cyber-spinner-width, 2px) solid var(--cyber-border-dim);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cyber-glow-color);
+  animation: cyber-spin 0.8s linear infinite;
+}
+
+.cyber-spinner__label {
+  color: var(--cyber-text-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cyber-spinner__ring {
+    animation-duration: 2.4s;
+  }
+}
+
+@keyframes cyber-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -- color variants (see progress.css for why tokens are re-derived) ----- */
+.cyber-spinner--accent {
+  color: var(--cyber-accent);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-accent) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-accent) 55%, transparent);
+}
+
+.cyber-spinner--warning {
+  color: var(--cyber-warning);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-warning) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-warning) 55%, transparent);
+}
+
+.cyber-spinner--danger {
+  color: var(--cyber-danger);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-danger) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-danger) 55%, transparent);
+}
+
+.cyber-spinner--success {
+  color: var(--cyber-success);
+  --cyber-border-dim: color-mix(in srgb, var(--cyber-success) 20%, transparent);
+  --cyber-glow-color: color-mix(in srgb, var(--cyber-success) 55%, transparent);
+}

@@ -19,7 +19,39 @@ export const ok = (
     >
       <cyber-tab-panel label="Fleet" />
     </cyber-tabs>
-    <cyber-dropdown oncyber-select={(event) => event.detail.item.focus()} />
+    <cyber-dropdown
+      placement="top-end"
+      oncyber-select={(event) => event.detail.item.focus()}
+    />
+    <cyber-tooltip content="Jump drive offline" placement="right" delay={0}>
+      <button>Jump</button>
+    </cyber-tooltip>
+    <cyber-popover label="Filters" open oncyber-close={(event) => event.type}>
+      <button slot="trigger">Filters</button>
+    </cyber-popover>
+    <cyber-progress
+      label="Hull"
+      value={72}
+      max={100}
+      variant="danger"
+      striped
+    />
+    <cyber-meter label="Shields" value={35} low={30} high={70} optimum={100} />
+    <cyber-spinner label="Decrypting" variant="accent" />
+    <cyber-skeleton shape="text" />
+    <cyber-command
+      hotkey="mod+k"
+      oncyber-select={(event) => event.detail.value.toUpperCase()}
+    >
+      <cyber-command-item
+        value="scan"
+        group="Ship"
+        shortcut="S"
+        keywords="probe"
+      >
+        Scan system
+      </cyber-command-item>
+    </cyber-command>
     <cyber-toaster
       position="bottom-left"
       oncyber-toast-dismiss={(event) => event.detail.reason === 'timeout'}
@@ -64,6 +96,12 @@ export const badUnion = <cyber-tabs orientation="diagonal" />;
 export const badDetail = <cyber-modal oncyber-close={(e) => e.detail.index} />;
 // @ts-expect-error — not a position
 export const badAttr = <cyber-toaster position="center" />;
+// @ts-expect-error — not a placement
+export const badPlacement = <cyber-tooltip placement="center" />;
+// @ts-expect-error — not a bar variant
+export const badVariant = <cyber-progress variant="plasma" />;
+// @ts-expect-error — not a shape
+export const badShape = <cyber-skeleton shape="blob" />;
 // @ts-expect-error — not an input type
 export const badType = <cyber-input type="color" />;
 // @ts-expect-error — the slider's value is a number

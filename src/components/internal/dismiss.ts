@@ -18,6 +18,15 @@ function composedContains(ancestor: Node, node: Node | null): boolean {
   return false;
 }
 
+/** The focused element, descending into shadow roots. */
+function deepActiveElement(): Element | null {
+  let active: Element | null = document.activeElement;
+  while (active?.shadowRoot?.activeElement) {
+    active = active.shadowRoot.activeElement;
+  }
+  return active;
+}
+
 /**
  * One document-level listener for every controller, so a single Escape
  * closes exactly one overlay: the top-most open one the event came from,
@@ -31,9 +40,12 @@ function onDocumentKeyDown(event: KeyboardEvent) {
   const path = event.composedPath();
   // top-most first
   const open = openStack.filter((c) => c.isOpen()).reverse();
+  // not :focus-within — engines don't propagate it to the host of a
+  // focused element shown in a top-layer popover
+  const active = deepActiveElement();
   let target =
     open.find((c) => path.includes(c.host)) ??
-    open.find((c) => c.host.matches(':focus-within'));
+    open.find((c) => composedContains(c.host, active));
   if (!target) {
     const top = open[0];
     const dialog = path.find(

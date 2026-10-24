@@ -1,0 +1,196 @@
+/* ==========================================================================
+   .cyber-command — command palette: a search field over a filtered list
+   of commands, in a top-aligned dialog. <cyber-command> renders this
+   (filtering, keyboard navigation, grouping); the classes also skin a
+   static palette you drive yourself.
+   <dialog class="cyber-command" aria-label="Command palette">
+     <div class="cyber-command__search">
+       <span class="cyber-command__prompt" aria-hidden="true">&gt;</span>
+       <input class="cyber-command__input" role="combobox" …>
+     </div>
+     <div class="cyber-command__list" role="listbox">
+       <div class="cyber-command__group" role="presentation">Navigation</div>
+       <div class="cyber-command__item" role="option" aria-selected="true">
+         Open starmap <kbd class="cyber-command__shortcut">⌘ S</kbd>
+       </div>
+       <div class="cyber-command__empty" hidden>No matching commands</div>
+     </div>
+     <div class="cyber-command__hints"><kbd>↑↓</kbd> navigate …</div>
+   </dialog>
+   States: [aria-selected="true"] highlights the active item,
+   [aria-disabled="true"] dims one.
+   Knobs: --cyber-command-width (default min(40rem, 92vw)),
+   --cyber-command-list-height (default 50vh).
+   ========================================================================== */
+
+.cyber-command {
+  box-sizing: border-box;
+  width: var(--cyber-command-width, min(40rem, 92vw));
+  max-width: 100%;
+  margin: 12vh auto 0;
+  padding: 0;
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  background: var(--cyber-surface);
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-body);
+  clip-path: polygon(
+    var(--cyber-clip) 0,
+    100% 0,
+    100% calc(100% - var(--cyber-clip)),
+    calc(100% - var(--cyber-clip)) 100%,
+    0 100%,
+    0 var(--cyber-clip)
+  );
+  box-shadow: inset 0 0 40px
+    color-mix(in srgb, var(--cyber-primary) 6%, transparent);
+}
+
+.cyber-command::backdrop {
+  background: var(--cyber-scrim, rgba(2, 6, 12, 0.7));
+  backdrop-filter: blur(3px) saturate(1.2);
+}
+
+.cyber-command__search {
+  display: flex;
+  align-items: center;
+  gap: var(--cyber-space-2);
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  border-bottom: var(--cyber-border-width) solid var(--cyber-border-dim);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--cyber-primary) 12%, transparent),
+    transparent 75%
+  );
+}
+
+.cyber-command__prompt {
+  font-family: var(--cyber-font-mono);
+  font-size: 1rem;
+  color: var(--cyber-primary);
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-command__input {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  padding: 0.35em 0;
+  border: 0;
+  background: transparent;
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  outline: none;
+  caret-color: var(--cyber-primary);
+}
+
+.cyber-command__input::placeholder {
+  color: var(--cyber-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.82rem;
+}
+
+.cyber-command__list {
+  max-height: var(--cyber-command-list-height, 50vh);
+  padding: var(--cyber-space-1) 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.cyber-command__group {
+  padding: var(--cyber-space-2) var(--cyber-space-3) var(--cyber-space-1);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-command__item {
+  display: flex;
+  align-items: center;
+  gap: var(--cyber-space-3);
+  padding: 0.55em var(--cyber-space-3);
+  border-left: 2px solid transparent;
+  font-family: var(--cyber-font-mono);
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  color: var(--cyber-text);
+  cursor: pointer;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease;
+}
+
+.cyber-command__item > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.cyber-command__item[aria-selected="true"] {
+  background: color-mix(in srgb, var(--cyber-primary) 14%, transparent);
+  border-left-color: var(--cyber-primary);
+  color: var(--cyber-primary);
+}
+
+.cyber-command__item[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cyber-command__shortcut,
+.cyber-command__hints kbd {
+  flex: none;
+  padding: 0.1em 0.5em;
+  border: 1px solid var(--cyber-border-dim);
+  background: var(--cyber-tint);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-command__empty {
+  padding: var(--cyber-space-3);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cyber-text-dim);
+  text-align: center;
+}
+
+.cyber-command__hints {
+  display: flex;
+  gap: var(--cyber-space-3);
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  border-top: var(--cyber-border-width) solid var(--cyber-border-dim);
+  font-family: var(--cyber-font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--cyber-text-dim);
+}
+
+.cyber-command__hints kbd {
+  margin-right: 0.4em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-command[open] {
+    animation: cyber-command-in 0.16s ease-out;
+  }
+
+  @keyframes cyber-command-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

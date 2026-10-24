@@ -24,6 +24,20 @@ export const input: Props<'cyber-input'> = {
   onChange: (event) => event.type,
 };
 export const slider: Props<'cyber-slider'> = { value: 60, min: 0, max: 100 };
+export const tooltip: Props<'cyber-tooltip'> = {
+  content: 'Jump drive offline',
+  placement: 'bottom-start',
+  delay: 0,
+};
+export const progress: Props<'cyber-progress'> = {
+  value: 72,
+  indeterminate: false,
+  variant: 'success',
+};
+export const command: Props<'cyber-command'> = {
+  hotkey: 'mod+k',
+  onCyberSelect: (event) => event.detail.value.trim(),
+};
 
 // @ts-expect-error — the slider's value is a number
 export const badSlider: Props<'cyber-slider'> = { value: '60' };
@@ -31,3 +45,5 @@ export const badSlider: Props<'cyber-slider'> = { value: '60' };
 export const badProp: Props<'cyber-modal'> = { open: 'yes' };
 // @ts-expect-error — not an activation mode
 export const badUnion: Props<'cyber-tabs'> = { activation: 'eager' };
+// @ts-expect-error — not a placement
+export const badPlacement: Props<'cyber-popover'> = { placement: 'center' };

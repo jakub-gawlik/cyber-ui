@@ -12,6 +12,14 @@ import { CyberSwitch } from '@jgawlik/cyber-ui/switch';
 import { CyberRadioGroup, CyberRadio } from '@jgawlik/cyber-ui/radio-group';
 import { CyberSlider } from '@jgawlik/cyber-ui/slider';
 import { CyberSelect, CyberOption } from '@jgawlik/cyber-ui/select';
+import { CyberTooltip, type TooltipTrigger } from '@jgawlik/cyber-ui/tooltip';
+import { CyberPopover } from '@jgawlik/cyber-ui/popover';
+import { CyberProgress } from '@jgawlik/cyber-ui/progress';
+import { CyberMeter, type MeterState } from '@jgawlik/cyber-ui/meter';
+import { CyberSpinner } from '@jgawlik/cyber-ui/spinner';
+import { CyberSkeleton } from '@jgawlik/cyber-ui/skeleton';
+import { CyberCommand, CyberCommandItem } from '@jgawlik/cyber-ui/command';
+import type { Placement } from '@jgawlik/cyber-ui';
 import * as all from '@jgawlik/cyber-ui';
 
 export const same: [typeof CyberModal, typeof CyberTabs, typeof CyberCard] = [
@@ -19,7 +27,26 @@ export const same: [typeof CyberModal, typeof CyberTabs, typeof CyberCard] = [
   all.CyberTabs,
   all.CyberCard,
 ];
-export const classes = [CyberDropdown, CyberAccordion];
+export const classes = [
+  CyberDropdown,
+  CyberAccordion,
+  CyberTooltip,
+  CyberPopover,
+  CyberProgress,
+  CyberMeter,
+  CyberSpinner,
+  CyberSkeleton,
+  CyberCommand,
+  CyberCommandItem,
+];
+export const placement: Placement = 'bottom-end';
+export const tooltipTrigger: TooltipTrigger = 'focus';
+declare const meter: CyberMeter;
+export const meterState: MeterState | undefined = meter.state;
+declare const command: CyberCommand;
+export const visible: CyberCommandItem[] = command.visibleItems;
+// @ts-expect-error — percent is read-only
+meter.percent = 10;
 export const formClasses = [
   CyberTextarea,
   CyberCheckbox,

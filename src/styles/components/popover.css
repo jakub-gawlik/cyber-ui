@@ -1,0 +1,56 @@
+/* ==========================================================================
+   .cyber-popover — anchored surface for rich content (forms, details,
+   confirmations). Used by <cyber-popover> as its panel; usable standalone
+   for any floating panel you position yourself.
+   <div class="cyber-popover" role="dialog" aria-label="Filters">
+     <div class="cyber-popover__title">Filters</div>
+     <div class="cyber-popover__body">…</div>
+   </div>
+   Knobs: --cyber-popover-width (default max-content, capped at 20rem).
+   ========================================================================== */
+
+.cyber-popover {
+  box-sizing: border-box;
+  width: var(--cyber-popover-width, max-content);
+  min-width: 10rem;
+  max-width: min(20rem, 92vw);
+  background: var(--cyber-surface);
+  border: var(--cyber-border-width) solid var(--cyber-border);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--cyber-shade) 60%, transparent),
+    0 0 10px var(--cyber-glow-color);
+  clip-path: polygon(
+    8px 0,
+    100% 0,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    0 100%,
+    0 8px
+  );
+  color: var(--cyber-text);
+  font-family: var(--cyber-font-body);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  outline: none;
+}
+
+.cyber-popover__title {
+  padding: var(--cyber-space-2) var(--cyber-space-3);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--cyber-primary) 16%, transparent),
+    transparent 75%
+  );
+  border-bottom: var(--cyber-border-width) solid var(--cyber-border-dim);
+  font-family: var(--cyber-font-display);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 8px var(--cyber-glow-color);
+}
+
+.cyber-popover__body {
+  padding: var(--cyber-space-3);
+  color: var(--cyber-text-dim);
+}

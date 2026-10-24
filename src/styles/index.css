@@ -29,6 +29,10 @@
 @import "./components/progress.css" layer(cyber-ui.components);
 @import "./components/stat.css" layer(cyber-ui.components);
 @import "./components/tooltip.css" layer(cyber-ui.components);
+@import "./components/popover.css" layer(cyber-ui.components);
+@import "./components/spinner.css" layer(cyber-ui.components);
+@import "./components/skeleton.css" layer(cyber-ui.components);
+@import "./components/command.css" layer(cyber-ui.components);
 @import "./components/toast.css" layer(cyber-ui.components);
 
 /* the fx layer is last, so utilities like .cyber-glass win over component

@@ -50,6 +50,34 @@
       "types": "./dist/components/cyber-dropdown.d.ts",
       "import": "./dist/components/cyber-dropdown.js"
     },
+    "./tooltip": {
+      "types": "./dist/components/cyber-tooltip.d.ts",
+      "import": "./dist/components/cyber-tooltip.js"
+    },
+    "./popover": {
+      "types": "./dist/components/cyber-popover.d.ts",
+      "import": "./dist/components/cyber-popover.js"
+    },
+    "./progress": {
+      "types": "./dist/components/cyber-progress.d.ts",
+      "import": "./dist/components/cyber-progress.js"
+    },
+    "./meter": {
+      "types": "./dist/components/cyber-meter.d.ts",
+      "import": "./dist/components/cyber-meter.js"
+    },
+    "./spinner": {
+      "types": "./dist/components/cyber-spinner.d.ts",
+      "import": "./dist/components/cyber-spinner.js"
+    },
+    "./skeleton": {
+      "types": "./dist/components/cyber-skeleton.d.ts",
+      "import": "./dist/components/cyber-skeleton.js"
+    },
+    "./command": {
+      "types": "./dist/components/cyber-command.d.ts",
+      "import": "./dist/components/cyber-command.js"
+    },
     "./modal": {
       "types": "./dist/components/cyber-modal.d.ts",
       "import": "./dist/components/cyber-modal.js"

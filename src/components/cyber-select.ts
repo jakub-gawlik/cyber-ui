@@ -8,6 +8,7 @@ import {
 } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
+import { AnchorController, floatingStyles } from './internal/anchor.js';
 import { DismissController } from './internal/dismiss.js';
 import {
   FieldControl,
@@ -122,6 +123,9 @@ function valueMissingMessage(): string {
  * Open: arrows / Home / End move, typing jumps, Enter / Space select and
  * close, Escape closes; both return focus to the trigger. Tab closes.
  *
+ * The popup is an anchored panel (top-layer popover + CSS anchor
+ * positioning where supported, else absolute + flip), see <cyber-dropdown>.
+ *
  * Custom states: `:state(open)`, `:state(invalid)`, `:state(user-invalid)`.
  *
  * @slot - <cyber-option> elements.
@@ -148,9 +152,15 @@ export class CyberSelect extends FieldControl {
     unsafeCSS(selectStyles),
     unsafeCSS(dropdownStyles),
     formHostStyles,
+    floatingStyles,
     css`
+      :host {
+        position: static;
+      }
+
       .cyber-select__anchor {
         position: relative;
+        --cyber-floating-gap: 4px;
       }
 
       .cyber-select {
@@ -168,19 +178,19 @@ export class CyberSelect extends FieldControl {
       }
 
       .cyber-select__listbox {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
-        right: 0;
-        z-index: 50;
         box-sizing: border-box;
         max-height: 16rem;
         overflow-y: auto;
       }
 
-      .cyber-select__listbox[data-up] {
-        top: auto;
-        bottom: calc(100% + 4px);
+      /* as wide as the trigger: left/right in the host, anchor-size()
+         in the top layer */
+      .cyber-select__listbox:not([popover]) {
+        right: 0;
+      }
+
+      .cyber-select__listbox[popover] {
+        width: anchor-size(width);
       }
     `,
   ];
@@ -198,6 +208,7 @@ export class CyberSelect extends FieldControl {
 
   @query('#control') private trigger!: HTMLElement;
   @query('#listbox') private listbox!: HTMLElement;
+  @query('.cyber-select__anchor') private anchor!: HTMLElement;
 
   private dirtyValue: string | null = null;
   private typeahead = new Typeahead();
@@ -208,6 +219,12 @@ export class CyberSelect extends FieldControl {
     new DismissController(this, {
       isOpen: () => this.open,
       dismiss: (reason) => this.hide(reason === 'escape'),
+    });
+    new AnchorController(this, {
+      panel: () => this.listbox,
+      anchor: () => this.anchor,
+      placement: () => 'bottom-start',
+      isOpen: () => this.open,
     });
   }
 
@@ -254,7 +271,6 @@ export class CyberSelect extends FieldControl {
     if (this.open || this.isDisabled) return;
     this.open = true;
     this.updateComplete.then(() => {
-      this.flipIfNeeded();
       const enabled = this.enabledOptions;
       const target =
         focus === 'first'
@@ -308,14 +324,6 @@ export class CyberSelect extends FieldControl {
     this.markInteracted();
     this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
     this.emitChange();
-  }
-
-  private flipIfNeeded() {
-    delete this.listbox.dataset.up;
-    const rect = this.listbox.getBoundingClientRect();
-    if (rect.bottom > window.innerHeight && rect.height < rect.top) {
-      this.listbox.dataset.up = '';
-    }
   }
 
   private onTriggerClick() {
@@ -451,7 +459,7 @@ export class CyberSelect extends FieldControl {
     const name = this.hasLabel ? undefined : this.fallbackLabel;
     return this.renderField(
       html`
-        <div class="cyber-select__anchor">
+        <div class="cyber-select__anchor cyber-anchor">
           <div
             id="control"
             class="cyber-select"
@@ -479,7 +487,7 @@ export class CyberSelect extends FieldControl {
           </div>
           <div
             id="listbox"
-            class="cyber-menu cyber-select__listbox"
+            class="cyber-menu cyber-select__listbox cyber-floating"
             part="listbox"
             role="listbox"
             aria-labelledby=${ifDefined(this.hasLabel ? 'label' : undefined)}

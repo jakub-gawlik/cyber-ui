@@ -1,5 +1,10 @@
 import { LitElement, html, css, unsafeCSS, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
+import {
+  AnchorController,
+  floatingStyles,
+  type Placement,
+} from './internal/anchor.js';
 import { DismissController } from './internal/dismiss.js';
 import { Typeahead } from './internal/typeahead.js';
 import dropdownStyles from '../styles/components/dropdown.css?inline';
@@ -9,7 +14,13 @@ import dropdownStyles from '../styles/components/dropdown.css?inline';
  * click, or item selection; Escape and selection return focus to the
  * trigger. Arrow keys / Home / End move focus through the items, and typing
  * jumps to the next item whose text starts with the typed characters
- * (typeahead). Flips above the trigger when there is no room below.
+ * (typeahead).
+ *
+ * The menu is an anchored panel: in engines with the Popover API and CSS
+ * anchor positioning it renders in the top layer (escaping `overflow` and
+ * stacking contexts) and flips by CSS when it would overflow; elsewhere it
+ * is absolutely positioned inside the host and flipped by the element.
+ * `placement` picks the side (default `bottom-start`).
  *
  * Escape is scoped: it closes this menu only when the key event comes from
  * inside it (or focus is inside it), or when it is the top-most open
@@ -20,6 +31,7 @@ import dropdownStyles from '../styles/components/dropdown.css?inline';
  * @slot - Menu items. Give them `role="menuitem"`; `.cyber-menu__item`
  *   from the global stylesheet or the built-in slotted styling provides the
  *   skin.
+ * @csspart anchor - The wrapper around the trigger the menu is anchored to.
  * @csspart menu - The `role="menu"` surface.
  * @fires {CustomEvent} cyber-open - The menu opened.
  * @fires {CustomEvent} cyber-close - The menu closed.
@@ -37,26 +49,10 @@ import dropdownStyles from '../styles/components/dropdown.css?inline';
 export class CyberDropdown extends LitElement {
   static styles = [
     unsafeCSS(dropdownStyles),
+    floatingStyles,
     css`
       :host {
-        position: relative;
         display: inline-block;
-      }
-
-      .cyber-dropdown__menu {
-        position: absolute;
-        top: calc(100% + 6px);
-        left: 0;
-        z-index: 50;
-      }
-
-      .cyber-dropdown__menu[data-up] {
-        top: auto;
-        bottom: calc(100% + 6px);
-      }
-
-      .cyber-dropdown__menu[hidden] {
-        display: none;
       }
 
       /* mirror of .cyber-menu__item (dropdown.css) for slotted items */
@@ -97,7 +93,11 @@ export class CyberDropdown extends LitElement {
   /** Whether the menu is open. */
   @property({ type: Boolean, reflect: true }) open = false;
 
+  /** Side of the trigger the menu opens on (flips when out of room). */
+  @property({ reflect: true }) placement: Placement = 'bottom-start';
+
   @query('.cyber-dropdown__menu') private menu!: HTMLElement;
+  @query('.cyber-anchor') private anchor!: HTMLElement;
 
   private trigger: HTMLElement | null = null;
 
@@ -108,6 +108,12 @@ export class CyberDropdown extends LitElement {
     new DismissController(this, {
       isOpen: () => this.open,
       dismiss: (reason) => this.hide(true, reason === 'escape'),
+    });
+    new AnchorController(this, {
+      panel: () => this.menu,
+      anchor: () => this.anchor,
+      placement: () => this.placement,
+      isOpen: () => this.open,
     });
   }
 
@@ -125,10 +131,7 @@ export class CyberDropdown extends LitElement {
     if (this.open) return;
     this.open = true;
     this.emit('cyber-open');
-    this.updateComplete.then(() => {
-      this.flipIfNeeded();
-      this.items[0]?.focus();
-    });
+    this.updateComplete.then(() => this.items[0]?.focus());
   }
 
   hide(emit = true, restoreFocus = false) {
@@ -167,14 +170,6 @@ export class CyberDropdown extends LitElement {
     this.dispatchEvent(
       new CustomEvent(name, { detail, bubbles: true, composed: true }),
     );
-  }
-
-  private flipIfNeeded() {
-    delete this.menu.dataset.up;
-    const rect = this.menu.getBoundingClientRect();
-    if (rect.bottom > window.innerHeight && rect.height < rect.top) {
-      this.menu.dataset.up = '';
-    }
   }
 
   private onTriggerClick = () => {
@@ -225,13 +220,15 @@ export class CyberDropdown extends LitElement {
 
   render() {
     return html`
-      <slot
-        name="trigger"
-        @click=${this.onTriggerClick}
-        @slotchange=${this.onTriggerSlotChange}
-      ></slot>
+      <div class="cyber-anchor" part="anchor">
+        <slot
+          name="trigger"
+          @click=${this.onTriggerClick}
+          @slotchange=${this.onTriggerSlotChange}
+        ></slot>
+      </div>
       <div
-        class="cyber-dropdown__menu cyber-menu"
+        class="cyber-dropdown__menu cyber-menu cyber-floating"
         part="menu"
         role="menu"
         ?hidden=${!this.open}

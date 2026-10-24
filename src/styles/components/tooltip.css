@@ -7,6 +7,9 @@
    Put the class on a WRAPPER when the trigger is corner-clipped (buttons,
    badges) — clip-path would cut the tooltip off the trigger itself.
    Position variants: --bottom, --left, --right (default: top).
+
+   .cyber-tooltip__bubble — the same bubble as a real element (no
+   positioning of its own); <cyber-tooltip> renders it as its panel.
    ========================================================================== */
 
 .cyber-tooltip {
@@ -14,13 +17,10 @@
   display: inline-block;
 }
 
-.cyber-tooltip::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 10px);
-  transform: translateX(-50%) translateY(4px);
-  z-index: 60;
+/* the bubble skin, shared by the ::after pseudo and the element's panel */
+.cyber-tooltip::after,
+.cyber-tooltip__bubble {
+  box-sizing: border-box;
   width: max-content;
   max-width: 240px;
   padding: 0.45em 0.8em;
@@ -38,11 +38,32 @@
   line-height: 1.4;
   color: var(--cyber-text);
   white-space: pre-line;
-  opacity: 0;
   pointer-events: none;
+}
+
+.cyber-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  z-index: 60;
+  opacity: 0;
   transition:
     opacity 0.15s ease,
     transform 0.15s ease;
+}
+
+/* element panel: fades in from display:none via @starting-style */
+.cyber-tooltip__bubble {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+@starting-style {
+  .cyber-tooltip__bubble {
+    opacity: 0;
+  }
 }
 
 .cyber-tooltip:hover::after,
