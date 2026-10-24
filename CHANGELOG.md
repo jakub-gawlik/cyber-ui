@@ -4,7 +4,7 @@ All notable changes to cyber-ui are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.3.0] - 2026-10-24
 
 ### Added
 
@@ -125,7 +125,7 @@ All notable changes to cyber-ui are documented here. The format follows
   fights. If you relied on cyber-ui rules beating your own lower-specificity
   rules, those rules now win instead; put them in a layer declared before
   `cyber-ui` to restore the old precedence.
-- `package.json` `homepage` now points to https://cyberui.art.
+- `package.json` `homepage` now points to <https://cyberui.art>.
 - `<cyber-dropdown>`: `aria-haspopup="menu"` and a live `aria-expanded` are
   now set on the slotted trigger element (they were on the internal
   `<slot>`, where assistive tech ignores them). Escape and item selection
@@ -157,7 +157,7 @@ All notable changes to cyber-ui are documented here. The format follows
   documented on a separate website.
 - User-facing documentation (`docs/getting-started.md`, `theming.md`,
   `css-components.md`, `web-components.md`, `effects.md`, `docs/README.md`)
-  and the README's usage sections — it now lives on https://cyberui.art.
+  and the README's usage sections — it now lives on <https://cyberui.art>.
   The repo keeps developer docs only (`docs/architecture.md`).
 
 ## [0.1.0] - 2026-10-07
